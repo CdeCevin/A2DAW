@@ -13,7 +13,7 @@ import TratamientosPage from './pages/TratamientosPage/TratamientosPage'
 
 const route = createBrowserRouter([
   {path:'/', element:<LoginPage />},
-  {path:'/menu', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN","ROLE_USER"]}><MenuPage/></ProtectedRoute>},
+  {path:'/menu', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN","ROLE_USER"]}><DashbdPage/></ProtectedRoute>},
   {path:'/dashboard', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN","ROLE_USER"]}><DashbdPage/></ProtectedRoute>},
   {path:'/citas', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN","ROLE_USER"]}><CitasPage/></ProtectedRoute>},
   {path:'/duenos', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN","ROLE_USER"]}><DuenosPage/></ProtectedRoute>},

@@ -12,7 +12,9 @@ function ProtectedRoute({ children, allowedRoles }) {
 
   if (allowedRoles) {
     const decoded = jwtDecode(token);
-    const rol = decoded?.sub.split("#")[2];
+    console.log(decoded)
+    const rol = decoded?.sub.split("#")[2].split(",")[0]
+    console.log(rol)
 
     if (!allowedRoles.includes(rol)) {
       return <Navigate to="/no-autorizado" replace />;

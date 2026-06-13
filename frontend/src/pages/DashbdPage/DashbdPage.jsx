@@ -1,8 +1,15 @@
-function DashbdPage(){
-    return <>
-        <h3>Dashboard</h3>
+import Navbar from "../NavBar/NavBar";
 
-    </>
+function DashbdPage(){
+    return(
+        <>
+        <Navbar />
+        <div className="pt-20 sm:pt-24 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto">
+                <h3>Dashboard</h3>
+                <p>Bienvenido al panel de control...</p>
+            </div>
+        </>
+    );
 }
 
 export default DashbdPage;

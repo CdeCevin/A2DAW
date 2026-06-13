@@ -5,7 +5,7 @@ import { AuthContext } from "../../store/auth-context";
 import {Button, Card, Form, Input, Label, Link, TextField} from "@heroui/react";
 
 function LoginPage(){
-    const [correo, setCorreo] = useState('');
+    const [rut, setCorreo] = useState('');
     const [password, setPassword] = useState('')
     const navigate = useNavigate();
     const {saveToken} = useContext(AuthContext)
@@ -14,7 +14,6 @@ function LoginPage(){
         console.log('login')
         const resp = await loginApi({rut:rut, password:password})
         console.log(resp)
-        navigate('/menu')
         if(resp?.token){
             await saveToken(resp.token)
             navigate('/menu', {replace:true})
@@ -44,29 +43,24 @@ function LoginPage(){
         
 
         <Card className="w-full max-w-md bg-white">
-        <Card.Header>
-            <Card.Title>Login</Card.Title>
-            <Card.Description>Enter your credentials to access your account</Card.Description>
-        </Card.Header>
-        <Form onSubmit={loginAction}>
             <Card.Content>
             <div className="flex flex-col gap-4">
-                <TextField name="email" type="email" type="text" onChange={(e)=> setCorreo(e.target.value)}>
+                <TextField name="rut" type="text" value={rut} onChange={setCorreo}>
                 <Label>Correo Electronico</Label>
                 <Input placeholder="correo@ejemplo.com" variant="secondary" />
                 </TextField>
-                <TextField name="password" type="password" onChange={(e)=> setPassword(e.target.value)}>
+                <TextField name="password" type="password" value={password} onChange={setPassword}>
                 <Label>Contraseña</Label>
                 <Input placeholder="••••••••" variant="secondary" />
                 </TextField>
             </div>
             </Card.Content>
             <Card.Footer className="mt-4 flex flex-col gap-2">
-            <Button className="w-full bg-aqua-vg" type="submit">
+            <Button className="w-full bg-verde-claro-vg text-white font-bold" type="submit" onClick={loginAction}>
                 Ingresar
             </Button>
             </Card.Footer>
-        </Form>
+        
         </Card>
     </div>
 );}
