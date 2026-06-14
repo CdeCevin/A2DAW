@@ -49,13 +49,13 @@ export default function Navbar() {
                     <div className='flex justify-start'>
                         <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
                             <Link to="/menu" className="flex items-center cursor-pointer">
-                            <div>
+                            <div className='flex flex-col items-center'>
                                 <img 
-                                    src="/img/logo_mientras.png"
+                                    src="/img/logo_mientras.jpg"
                                     alt="VetGo"
                                     className="h-6 sm:h-8"
                                 />
-                                <span className='font-bold text-black'>VetGo</span>
+                                <span className='text-lg font-bold font-montserrat text-black'>VetGo</span>
                             </div>
                         </Link>
                             {isUser && (
@@ -77,7 +77,7 @@ export default function Navbar() {
                         <Link to="/menu" className="md:hidden flex items-center cursor-pointer">
                             <div>
                                 <img 
-                                    src="/img/logo_mientras.png"
+                                    src="/img/logo_mientras.jpg"
                                     alt="VetGo"
                                     className="h-6 sm:h-8"
                                 />

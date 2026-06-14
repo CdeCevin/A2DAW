@@ -26,37 +26,32 @@ function LoginPage(){
 
     return (
         <div className="flex flex-col items-center justify-center w-full min-h-screen py-16 sm:py-20 px-10 sm:px-6 lg:px-8 relative bg-bg-vg">
-            {/* 
-            <div className="flex flex-col items-center justify-center pb-5">
-                <img></img>
-                <span className="text-2xl font-bold"> VetGo</span>
-                <span className="text-md text-gray-400"> Ingrese a su cuenta</span>
+            <div>
+                <img 
+                    src="/img/logo_mientras.jpg"
+                    alt="VetGo"
+                    className="h-8 sm:h-16"
+                />
             </div>
-            
-            <div className="p-3 relative flex flex-col items-start justify-center bg-white border border-gray-100 rounded-lg shadow-sm shadow-black/20 sm:rounded-2xl sm:p-6 z-10">
-                <span className="text-sm text-gray-700 font-semibold ">Correo Electrónico</span>
-                <input type="text" onChange={(e)=> setRut(e.target.value)} />
-                <span className="text-sm text-gray-700 font-semibold">Contraseña</span>
-                <input type="password" onChange={(e)=> setPassword(e.target.value)} />
-                <button onClick={loginAction}>login</button>
-        </div>*/}
+            <span className="font-montserrat text-2xl font-bold text-gray-700">VetGo</span>
+            <span className="font-poppins text-md text-gray-500">Ingrese a su cuenta</span>
         
 
-        <Card className="w-full max-w-md bg-white">
+        <Card className="w-full max-w-md mt-5 bg-white">
             <Card.Content>
             <div className="flex flex-col gap-4">
                 <TextField name="rut" type="text" value={rut} onChange={setCorreo}>
-                <Label>Correo Electronico</Label>
-                <Input placeholder="correo@ejemplo.com" variant="secondary" />
+                <Label>Correo Electrónico</Label>
+                <Input className="border-neutral-300 focus:border-verde-vg focus:ring-verde-vg" placeholder="correo@ejemplo.com" variant="secondary" />
                 </TextField>
                 <TextField name="password" type="password" value={password} onChange={setPassword}>
                 <Label>Contraseña</Label>
-                <Input placeholder="••••••••" variant="secondary" />
+                <Input className="border-neutral-300 focus:border-verde-vg focus:ring-verde-vg" placeholder="••••••••" variant="secondary" />
                 </TextField>
             </div>
             </Card.Content>
             <Card.Footer className="mt-4 flex flex-col gap-2">
-            <Button className="w-full bg-verde-claro-vg text-white font-bold" type="submit" onClick={loginAction}>
+            <Button className="w-full bg-aqua-vg text-white font-semibold" type="submit" onClick={loginAction}>
                 Ingresar
             </Button>
             </Card.Footer>

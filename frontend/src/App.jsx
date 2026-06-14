@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
-import LoginPage from './pages/LoginPage'
 import MenuPage from './pages/MenuPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import CategoriaPage from './pages/CategoriaPage'
@@ -10,6 +9,7 @@ import DuenosPage from './pages/DuenosPage/DuenosPage'
 import MascotasPage from './pages/MascotasPage/MascotasPage'
 import VetPage from './pages/VetPage/VetPage'
 import TratamientosPage from './pages/TratamientosPage/TratamientosPage'
+import LoginPage from './pages/LoginPage/LoginPage'
 
 const route = createBrowserRouter([
   {path:'/', element:<LoginPage />},

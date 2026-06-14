@@ -3,8 +3,10 @@
 
 
 @theme {
+  --font-sans: "Poppins", var(--font-sans);
   --font-poppins: "Poppins", sans-serif;
   --font-wellington: "Wellington", cursive;
+  --font-montserrat: "Montserrat", sans-serif;
 
 
   --color-verde-vg: #8ab79c;
@@ -16,12 +18,12 @@
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
 
-  background-color: #ffffff;
+  background-color: #f8fafc;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
