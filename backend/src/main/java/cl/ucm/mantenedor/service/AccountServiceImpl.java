@@ -38,19 +38,19 @@ public class AccountServiceImpl implements AccountService{
 
 
     private AccountDtoOut toDto(Usuario u){
-        return new AccountDtoOut(u.getRut(), u.getName(), u.getRoles().get(0).getName());
+        return new AccountDtoOut(u.getCorreo(), u.getName(), u.getRoles().get(0).getName());
     }
 
     @Override
     public AccountDtoOut createAccount(AccountDtoIn in) {
-        if(repository.existsById(in.getRut())){
-            throw new IllegalArgumentException("rut ya registrado");
+        if(repository.existsById(in.getCorreo())){
+            throw new IllegalArgumentException("correo ya registrado");
         }
 
         Rol rol = rolRepository.findById(in.getIdRol()).orElseThrow(()->new IllegalArgumentException("rol not found"));
 
         Usuario u = new Usuario();
-        u.setRut(in.getRut());
+        u.setCorreo(in.getCorreo());
         u.setPassword(encoder.encode(in.getPassword()));
         u.setName(in.getName());
         u.setRoles(List.of(rol));
@@ -60,9 +60,9 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public LoginDtoOut login(LoginDtoIn in) {
-        Usuario usuario = repository.findById(in.getRut()).orElseThrow(()->new IllegalArgumentException("rut not found"));
+        Usuario usuario = repository.findById(in.getCorreo()).orElseThrow(()->new IllegalArgumentException("rut not found"));
 
-        UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(in.getRut(), in.getPassword());
+        UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(in.getCorreo(), in.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(login);
 
@@ -70,7 +70,7 @@ public class AccountServiceImpl implements AccountService{
                 .map(org.springframework.security.core.GrantedAuthority::getAuthority)
                 .collect(java.util.stream.Collectors.joining(","));
 
-        String jwt = jwtUtil.create(usuario.getRut()+"#"+usuario.getName(), rolesStr);
+        String jwt = jwtUtil.create(usuario.getCorreo()+"#"+usuario.getName(), rolesStr);
 
         return new LoginDtoOut(jwt);
     }

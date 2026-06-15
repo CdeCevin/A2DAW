@@ -15,8 +15,8 @@ import java.util.List;
 @Entity
 public class Usuario {
     @Id
-    @Column(length = 20)
-    private String rut;
+    @Column(length = 50)
+    private String correo;
     @Column(length = 50)
     private String name;
     @Column(length = 100)
@@ -25,7 +25,7 @@ public class Usuario {
     @ManyToMany
     @JoinTable(
             name = "user_rol",
-            joinColumns = @JoinColumn(name = "rut_fk"),
+            joinColumns = @JoinColumn(name = "correo_fk"),
             inverseJoinColumns = @JoinColumn(name = "rol_fk")
     )
     private List<Rol> roles;
