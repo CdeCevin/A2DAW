@@ -85,7 +85,6 @@ public class CitaController {
                         }
                         existing.setVeterinario(veterinario);
                     }
-
                     return ResponseEntity.ok(repository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
