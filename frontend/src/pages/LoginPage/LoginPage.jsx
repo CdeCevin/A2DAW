@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { loginApi } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../store/auth-context";
-import {Button, Card, Form, Input, Label, Link, TextField} from "@heroui/react";
+import {Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
 
 function LoginPage(){
     const [rut, setCorreo] = useState('');
@@ -36,13 +36,28 @@ function LoginPage(){
             <span className="font-montserrat text-2xl font-bold text-gray-700">VetGo</span>
             <span className="font-poppins text-md text-gray-500">Ingrese a su cuenta</span>
         
-
-        <Card className="w-full max-w-md mt-5 bg-white">
+        <Form validationBehavior="native" onSubmit={loginAction}>
+            
+        <Card className="w-full min-w-md max-w-md mt-5 bg-white">
+            
             <Card.Content>
             <div className="flex flex-col gap-4">
-                <TextField name="rut" type="text" value={rut} onChange={setCorreo}>
+                
+                <TextField 
+                name="rut" 
+                type="email" 
+                value={rut} 
+                
+                validate={(value) => {
+                    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+                        return "Por favor ingrese un correo válido";
+                    }
+                    return null;
+                }}
+                onChange={setCorreo}>
                 <Label>Correo Electrónico</Label>
                 <Input className="border-neutral-300 focus:border-verde-vg focus:ring-verde-vg" placeholder="correo@ejemplo.com" variant="secondary" />
+                <FieldError />
                 </TextField>
                 <TextField name="password" type="password" value={password} onChange={setPassword}>
                 <Label>Contraseña</Label>
@@ -51,12 +66,13 @@ function LoginPage(){
             </div>
             </Card.Content>
             <Card.Footer className="mt-4 flex flex-col gap-2">
-            <Button className="w-full bg-aqua-vg text-white font-semibold" type="submit" onClick={loginAction}>
-                Ingresar
-            </Button>
+            <Button className="w-full bg-aqua-vg text-white font-semibold" type="submit">
+            Ingresar
+          </Button>
             </Card.Footer>
         
         </Card>
+        </Form>
     </div>
 );}
 
