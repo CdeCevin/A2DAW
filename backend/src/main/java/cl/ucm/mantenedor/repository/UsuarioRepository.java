@@ -10,11 +10,6 @@ import java.util.List;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
-    String QUERY="select r.name from usuario u " +
-            "inner join user_rol ur on u.rut = ur.rut_fk " +
-            "inner join rol r on r.id_rol = ur.rol_fk " +
-            "where u.rut = :rut";
-
-    @Query(value = QUERY, nativeQuery = true)
-    List<String> getRoles(String rut);
+    @Query("select r.name from Usuario u join u.roles r where u.correo = :correo")
+    List<String> getRoles(String correo);
 }
