@@ -5,14 +5,15 @@ import { AuthContext } from "../../store/auth-context";
 import {Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
 
 function LoginPage(){
-    const [rut, setCorreo] = useState('');
+    const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('')
     const navigate = useNavigate();
     const {saveToken} = useContext(AuthContext)
 
-    const loginAction = async()=>{
+    const loginAction = async(e) => {
+        e.preventDefault();
         console.log('login')
-        const resp = await loginApi({rut:rut, password:password})
+        const resp = await loginApi({correo:correo, password:password})
         console.log(resp)
         if(resp?.token){
             await saveToken(resp.token)
@@ -44,9 +45,9 @@ function LoginPage(){
             <div className="flex flex-col gap-4">
                 
                 <TextField 
-                name="rut" 
+                name="correo" 
                 type="email" 
-                value={rut} 
+                value={correo} 
                 
                 validate={(value) => {
                     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
