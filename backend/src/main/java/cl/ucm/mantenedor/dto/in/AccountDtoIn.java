@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountDtoIn {
-    private String rut;
+    private String correo;
     private String name;
     private String password;
     private int idRol;
