@@ -1,5 +1,6 @@
 package cl.ucm.mantenedor.controller;
 
+import cl.ucm.mantenedor.dto.out.DuenioDtoOut;
 import cl.ucm.mantenedor.entities.Duenio;
 import cl.ucm.mantenedor.repository.DuenioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/duenio")
@@ -17,39 +19,53 @@ public class DuenioController {
     private DuenioRepository repository;
 
     @GetMapping
-    public List<Duenio> getAll() {
-        return repository.findAll();
+    public List<DuenioDtoOut> getAll() {
+        return repository.findAll().stream()
+                .map(DuenioDtoOut::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Duenio> getById(@PathVariable Integer id) {
+    public ResponseEntity<DuenioDtoOut> getById(@PathVariable Integer id) {
         return repository.findById(id)
+                .map(DuenioDtoOut::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Duenio> create(@RequestBody Duenio duenio) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(duenio));
+    public ResponseEntity<?> create(@RequestBody Duenio duenio) {
+        if (duenio.getActivo() == null) {
+            duenio.setActivo(true);
+        }
+        repository.save(duenio);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Dueño ingresado con éxito");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Duenio> update(@PathVariable Integer id, @RequestBody Duenio details) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Duenio details) {
         return repository.findById(id)
                 .map(existing -> {
-                    existing.setNombreCompleto(details.getNombreCompleto());
-                    existing.setEmail(details.getEmail());
-                    existing.setTelefono(details.getTelefono());
-                    return ResponseEntity.ok(repository.save(existing));
+                    if (details.getNombreCompleto() != null) {
+                        existing.setNombreCompleto(details.getNombreCompleto());
+                    }
+                    if (details.getEmail() != null) {
+                        existing.setEmail(details.getEmail());
+                    }
+                    if (details.getTelefono() != null) {
+                        existing.setTelefono(details.getTelefono());
+                    }
+                    repository.save(existing);
+                    return ResponseEntity.ok("Dueño actualizado con éxito");
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("Dueño eliminado con éxito");
         }
         return ResponseEntity.notFound().build();
     }
