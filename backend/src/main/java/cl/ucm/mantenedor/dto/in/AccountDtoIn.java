@@ -13,5 +13,6 @@ public class AccountDtoIn {
     private String correo;
     private String name;
     private String password;
-    private int idRol;
+    private Integer idRol;
+    private String especialidad;
 }
