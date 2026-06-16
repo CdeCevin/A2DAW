@@ -31,6 +31,7 @@ public class CitaController {
         return repository.findAll();
     }
 
+    // Obtener Cita mediante ID
     @GetMapping("/{id}")
     public ResponseEntity<Cita> getById(@PathVariable Integer id) {
         return repository.findById(id)
@@ -38,6 +39,7 @@ public class CitaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Crear cita
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Cita cita) {
         if (cita.getMascota() == null || cita.getMascota().getId() == null) {
@@ -62,6 +64,7 @@ public class CitaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(cita));
     }
 
+    // Actualizar Cita
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Cita details) {
         return repository.findById(id)
@@ -90,6 +93,7 @@ public class CitaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Eliminar Cita
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         if (repository.existsById(id)) {
