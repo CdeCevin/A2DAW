@@ -3,12 +3,16 @@ package cl.ucm.mantenedor.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "mascotas")
+@SQLDelete(sql = "UPDATE mascotas SET activo = false WHERE id = ?")
+@SQLRestriction("activo = true")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +33,10 @@ public class Mascota {
 
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private Boolean activo = true;
 
     @ManyToOne
     @JoinColumn(name = "duenio_id", nullable = false)
