@@ -42,7 +42,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="fixed top-0 w-full z-50 transition-all duration-300 bg-fondo-sismmo border-b-2 border-grey/50">
+        <nav className="fixed top-0 w-full z-50 transition-all duration-300 bg-bg-vg border-b-2 border-grey/50">
             <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
                 <div className="flex flex-row justify-between h-14 sm:h-16 md:h-20">
                     {/*Lado Izquierdo */}
@@ -75,7 +75,7 @@ export default function Navbar() {
                             )}   
                         </div>
                         <Link to="/menu" className="md:hidden flex items-center cursor-pointer">
-                            <div>
+                            <div className='flex flex-col items-center'>
                                 <img 
                                     src="/img/logo_mientras.jpg"
                                     alt="VetGo"

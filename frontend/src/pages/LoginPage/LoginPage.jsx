@@ -39,7 +39,7 @@ function LoginPage(){
         
         <Form validationBehavior="native" onSubmit={loginAction}>
             
-        <Card className="w-full min-w-md max-w-md mt-5 bg-white">
+        <Card className="w-full lg:min-w-md max-w-md mt-5 bg-white">
             
             <Card.Content>
             <div className="flex flex-col gap-4">

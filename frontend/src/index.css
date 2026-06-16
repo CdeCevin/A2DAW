@@ -10,11 +10,13 @@
 
 
   --color-verde-vg: #8ab79c;
-  --color-azul-yg: #79afda;
+  --color-azul-vg: #79afda;
   --color-aqua-vg: #6cbcb9;
   --color-verde-claro-vg: #aecc8a;
   --color-azul-claro-vg: #78bfd5;
   --color-bg-vg: #f8fafc;
+  --color-accent-morado-vg: #af78fe;
+  --color-accent-naranjo-vg: #f0b675;
 }
 
 :root {
