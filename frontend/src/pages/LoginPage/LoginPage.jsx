@@ -3,12 +3,14 @@ import { loginApi } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../store/auth-context";
 import {Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
+import { useGlobalAlert } from "../../store/alert-context";
 
 function LoginPage(){
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('')
     const navigate = useNavigate();
     const {saveToken} = useContext(AuthContext)
+    const { showAlert } = useGlobalAlert();
 
     const loginAction = async(e) => {
         e.preventDefault();
@@ -19,7 +21,11 @@ function LoginPage(){
             await saveToken(resp.token)
             navigate('/menu', {replace:true})
         }else if(resp.message){
-            alert(resp.message)
+            console.log(resp)
+            showAlert("Error",resp.message, "danger");
+        }
+        else{
+            showAlert("Error","Ocurrió un error inesperado", "danger");
         }
         console.log(resp)
     }

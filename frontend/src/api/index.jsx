@@ -13,6 +13,6 @@ export async function loginApi(payload){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return null;
+        return "Ha ocurrido un error de servidor, vuelva a intentarlo más tarde.";
     }
 }
