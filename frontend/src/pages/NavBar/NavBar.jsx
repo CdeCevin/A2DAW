@@ -84,17 +84,7 @@ export default function Navbar() {
                                 <span className='font-bold text-black'>VetGo</span>
                             </div>
                         </Link>
-                        {roles.length > 0 && (
-                                <div className="md:hidden flex items-center gap-4 ml-4 pl-4 ">
-                                    <div className='flex flex-col justify-items-end'>
-                                        <span className="text-sm font-semibold">{userName}</span>
-                                        <Chip color="success" variant="soft" className='flex justify-center' >
-                                            <Chip.Label>{isAdmin ? "Veterinario":"Recepcionista"}</Chip.Label>
-                                    </Chip>
-                                    </div>
-                                    
-                                </div>
-                            )}
+                        
                         
                     </div>
                 
@@ -121,7 +111,17 @@ export default function Navbar() {
                                 </div>
                             )}
                         </div>
-                        
+                        {roles.length > 0 && (
+                                <div className="md:hidden flex items-center gap-4 mr-4 pl-4 ">
+                                    <div className='flex flex-col justify-items-end items-center'>
+                                        <span className="text-sm font-semibold">{userName}</span>
+                                        <Chip color="success" variant="soft" className='flex justify-center' >
+                                            <Chip.Label>{isAdmin ? "Veterinario":"Recepcionista"}</Chip.Label>
+                                    </Chip>
+                                    </div>
+                                    
+                                </div>
+                            )}
                         <button 
                             className='md:hidden p-2 text-white hover:bg-verde-claro-vg bg-verde-vg rounded-md cursor-pointer' 
                             onClick={() => setMobileMenuOpen((prev) => !prev)}

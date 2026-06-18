@@ -27,7 +27,7 @@ export async function saveCategoryApi(json, token){
                 "Authorization":`Bearer ${token}`
             }
         });
-        const data = await res.json();
+        const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")

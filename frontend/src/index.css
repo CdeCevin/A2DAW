@@ -10,6 +10,7 @@
 
 
   --color-verde-vg: #8ab79c;
+  --color-accent-aqua-vg: #0c706e;
   --color-azul-vg: #79afda;
   --color-aqua-vg: #6cbcb9;
   --color-verde-claro-vg: #aecc8a;
@@ -23,7 +24,7 @@
   font-family: "Poppins", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
+  --accent: #8ab79c;
 
   background-color: #f8fafc;
 
