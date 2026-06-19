@@ -152,6 +152,9 @@ function TratamientosPage(){
     // Renderizado condicional
     const isAdmin = roles.includes("ROLE_ADMIN");
     const isUser = roles.includes("ROLE_USER");
+    const costoTotal = datos.reduce((total, tratamiento) => {
+        return total + (Number(tratamiento.costo) || 0);
+    }, 0);
     return(
         <>
         <Navbar />
@@ -159,7 +162,7 @@ function TratamientosPage(){
                 <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
                     <span className="font-montserrat text-lg lg:text-2xl">Tratamientos</span>
-                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} </span>
+                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} - Costo: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
                 </div>
                 <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Añadir</Button>
                 </div>
@@ -204,7 +207,7 @@ function TratamientosPage(){
                         )}>
                             {tratFiltrados.map((data, key) =>(
                                 <Table.Row id={key} className="border-b">
-                                    <Table.Cell>{data.mascota.nombre}</Table.Cell>
+                                    <Table.Cell>{data.cita.mascota?.nombre || ""}</Table.Cell>
                                     <Table.Cell>{new Date(data.cita.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
                                         month: "2-digit",
@@ -214,9 +217,9 @@ function TratamientosPage(){
                                         hour12: false 
                                     })}</Table.Cell>
                                     
-                                    <Table.Cell>{data.veterinario.name}</Table.Cell>   
+                                    <Table.Cell>{data.cita.veterinario?.name || ""}</Table.Cell>   
                                     <Table.Cell>{data.descripcion}</Table.Cell>
-                                    <Table.Cell>{data.costo}</Table.Cell>
+                                    <Table.Cell>{new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(data.costo)}</Table.Cell>
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
                                             <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
@@ -257,7 +260,7 @@ function TratamientosPage(){
                         )}>
                             {tratFiltrados.map((data, key) =>(
                                 <Table.Row id={key} className="border-b">
-                                    <Table.Cell>{data.mascota.nombre}</Table.Cell>
+                                    <Table.Cell>{data.cita.mascota.nombre}</Table.Cell>
                                     <Table.Cell>{new Date(data.cita.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
                                         month: "2-digit",
@@ -267,9 +270,9 @@ function TratamientosPage(){
                                         hour12: false 
                                     })}</Table.Cell>
                                     
-                                    <Table.Cell>{data.veterinario.name}</Table.Cell>   
+                                    <Table.Cell>{data.cita.veterinario.name}</Table.Cell>   
                                     <Table.Cell>{data.descripcion}</Table.Cell>
-                                    <Table.Cell>{data.costo}</Table.Cell>
+                                    <Table.Cell>{new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(data.costo)}</Table.Cell>
                                       
                                 </Table.Row>
                             ))}     

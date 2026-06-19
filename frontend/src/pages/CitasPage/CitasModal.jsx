@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { DatePicker, DateField, Calendar, Modal, Button, Surface, TextField, Label, Input, Select, ListBox   } from "@heroui/react";
+import { Spinner, DatePicker, DateField, Calendar, Modal, Button, Surface, TextField, Label, Input, Select, ListBox   } from "@heroui/react";
 import { Mail } from 'lucide-react';
 import {I18nProvider} from "react-aria-components";
 import { parseDateTime } from "@internationalized/date";
 
 export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascotas, veterinarios }) {
+    const [isLoading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
             mascota: {id:""},
             fecha: "",
@@ -14,6 +15,7 @@ export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascot
 
         useEffect(() => {
             if (isOpen) {
+                setLoading(false)
         if (citaActual) {
             console.log("cita: ", citaActual)
             // Si viene una cita se llena el formulario
@@ -36,10 +38,17 @@ export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascot
     }, [citaActual, isOpen]);
 
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+        setLoading(true)
         e.preventDefault();
         // enviamos datos de vuelta al componente padre
-        onSave(formData);
+        try {
+            // Envio de datos y espera a termino de guardado
+            await onSave(formData);
+        } finally {
+            // Cambio de estado boton frente a guardado exitoso o no
+            setLoading(false);
+        }
     };
 return (
 <Modal isOpen={isOpen} onOpenChange={onClose} placement="center">
@@ -149,7 +158,14 @@ return (
                 <Button slot="close" variant="secondary" onPress={onClose}>
                     Cancelar
                 </Button>
-                <Button type="submit">{citaActual ? "Editar" : "Agendar"}</Button>
+                <Button type="submit" isPending={isLoading}>
+                {({isPending}) => (
+                    <>
+                    {isPending ? <Spinner color="current" size="sm" /> : ""}
+                    {isPending ? "Cargando..." : (citaActual? "Editar" : "Agendar")}
+                    </>
+                )}
+                </Button>
                 </Modal.Footer>
                 </form>
           </Modal.Dialog>

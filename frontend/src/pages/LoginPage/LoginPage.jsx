@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { loginApi } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../store/auth-context";
-import {Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
+import {Spinner, Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
 import { useGlobalAlert } from "../../store/alert-context";
 
 function LoginPage(){
@@ -11,9 +11,11 @@ function LoginPage(){
     const navigate = useNavigate();
     const {saveToken} = useContext(AuthContext)
     const { showAlert } = useGlobalAlert();
+    const [isLoading, setLoading] = useState(false);
 
     const loginAction = async(e) => {
         e.preventDefault();
+        setLoading(true)
         console.log('login')
         const resp = await loginApi({correo:correo, password:password})
         console.log(resp)
@@ -22,9 +24,11 @@ function LoginPage(){
             navigate('/menu', {replace:true})
         }else if(resp.message){
             console.log(resp)
+            setLoading(false)
             showAlert("Error",resp.message, "danger");
         }
         else{
+            setLoading(false)
             showAlert("Error","Ocurrió un error inesperado", "danger");
         }
         console.log(resp)
@@ -73,8 +77,13 @@ function LoginPage(){
             </div>
             </Card.Content>
             <Card.Footer className="mt-4 flex flex-col gap-2">
-            <Button className="w-full bg-aqua-vg text-white font-semibold" type="submit">
-            Ingresar
+            <Button isPending={isLoading} variant="primary" className="w-full font-semibold" type="submit">
+            {({isPending}) => (
+                <>
+                {isPending ? <Spinner color="current" size="sm" /> : ""}
+                {isPending ? "Ingresando..." : "Ingresar"}
+                </>
+            )}
           </Button>
             </Card.Footer>
         

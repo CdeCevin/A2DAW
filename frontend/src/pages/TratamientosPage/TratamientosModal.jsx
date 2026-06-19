@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { DatePicker, DateField, Calendar, Modal, Button, Surface, TextField, Label, Input, Select, ListBox   } from "@heroui/react";
+import { Spinner, NumberField, DatePicker, DateField, Calendar, Modal, Button, Surface, TextField, Label, Input, Select, ListBox   } from "@heroui/react";
 import { Mail } from 'lucide-react';
 import {I18nProvider} from "react-aria-components";
 import { parseDateTime } from "@internationalized/date";
 
 export default function TratamientosModal({ isOpen, onClose, tratActual, onSave, citas }) {
+    const [isLoading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
             cita: {id:""},
             descripcion: "",
@@ -13,9 +14,10 @@ export default function TratamientosModal({ isOpen, onClose, tratActual, onSave,
 
         useEffect(() => {
             if (isOpen) {
+                setLoading(false)
         if (tratActual) {
             console.log("tratamiento: ", tratActual)
-            // Si viene una cita se llena el formulario
+            // Si viene un tratamiento se llena el formulario
             setFormData({
                 cita: { id: tratActual.cita?.id ? String(tratActual.cita.id) : "" },
                 descripcion: tratActual.descripcion || "",
@@ -23,7 +25,7 @@ export default function TratamientosModal({ isOpen, onClose, tratActual, onSave,
                 
             });
         } else {
-            // Cita vacia limpia el formulario
+            // Tratamiento vacio limpia el formulario
             setFormData({ 
                 costo: "", 
                 descripcion: "",
@@ -35,10 +37,17 @@ export default function TratamientosModal({ isOpen, onClose, tratActual, onSave,
     }, [tratActual, isOpen]);
 
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e)  => {
+        setLoading(true)
         e.preventDefault();
-        // enviamos datos de vuelta al componente padre
-        onSave(formData);
+            // enviamos datos de vuelta al componente padre
+        try {
+            // Envio de datos y espera a termino de guardado
+            await onSave(formData);
+        } finally {
+            // Cambio de estado boton frente a guardado exitoso o no
+            setLoading(false);
+        }
     };
 return (
 <Modal isOpen={isOpen} onOpenChange={onClose} placement="center">
@@ -85,19 +94,42 @@ return (
                     <Label>Descripcion</Label>
                     <Input className="border border-gray-100" placeholder="Descripción del tratamiento..." />
                   </TextField>
-                  <TextField isRequired={!tratActual}  className="w-full" name="razon" variant="primary" value={formData.costo} onChange={(value) => setFormData({ ...formData, costo: value })}>
-                    <Label>Costo ($)</Label>
-                    <Input type='number' className="border border-gray-100" placeholder="0" />
-                  </TextField>
-                  
-                
+                <NumberField
+                    className="w-full"
+                    name="costo" 
+                    variant="primary"
+                    minValue={0}
+                    isRequired={!tratActual}
+                    value={formData.costo}
+                    onChange={(value) => setFormData({ ...formData, costo: value })}
+                    
+                    formatOptions={{
+                        currency: "CLP",
+                        style: "currency",
+                    }}
+                >
+                    <Label>Costo</Label>
+                    <NumberField.Group>
+                        <NumberField.DecrementButton />
+                        <NumberField.Input className="border border-gray-100" />
+                        <NumberField.IncrementButton />
+                    </NumberField.Group>
+                </NumberField>
               </Surface>
             </Modal.Body>
             <Modal.Footer>
                 <Button slot="close" variant="secondary" onPress={onClose}>
                     Cancelar
                 </Button>
-                <Button type="submit">{tratActual ? "Editar" : "Añadir"}</Button>
+                
+                <Button type="submit" isPending={isLoading}>
+                {({isPending}) => (
+                    <>
+                    {isPending ? <Spinner color="current" size="sm" /> : ""}
+                    {isPending ? "Cargando..." : (tratActual? "Editar" : "Añadir")}
+                    </>
+                )}
+                </Button>
                 </Modal.Footer>
                 </form>
           </Modal.Dialog>
