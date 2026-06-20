@@ -14,7 +14,7 @@ public class TratamientoDtoOut {
     private Integer id;
     private String descripcion;
     private Double costo;
-    private CitaResumenDto cita;
+    private CitaDtoOut cita;
 
     public static TratamientoDtoOut fromEntity(Tratamiento t) {
         if (t == null) return null;
@@ -22,7 +22,7 @@ public class TratamientoDtoOut {
             t.getId(),
             t.getDescripcion(),
             t.getCosto(),
-            CitaResumenDto.fromEntity(t.getCita())
+            CitaDtoOut.fromEntity(t.getCita())
         );
     }
 }
