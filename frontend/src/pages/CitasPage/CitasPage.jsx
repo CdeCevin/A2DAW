@@ -176,7 +176,7 @@ function CitasPage(){
             <div className=" pt-20 sm:pt-24 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto">
                 <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
-                    <span className="font-montserrat text-lg lg:text-2xl">Citas</span>
+                    <span className="font-montserrat text-xl lg:text-2xl">Citas</span>
                     <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Citas totales: {datos.length} </span>
                 </div>
                 <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Agendar</Button>
@@ -186,7 +186,7 @@ function CitasPage(){
             <div>
             <SearchField 
                 name="search" 
-                className="mt-5"
+                className="mt-5 mb-5 "
                 value={busqueda}
                 onChange={(e) => setBusqueda(e?.target?.value ?? e)}
             >

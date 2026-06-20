@@ -69,7 +69,7 @@ export default function Navbar() {
                             
                             {isAdmin && (
                                 <>
-                                    <Link to="/veterinarios" className="font-poppins text-gray-500 text-sm lg:text-base px-4 py-2 rounded-full transition-colors duration-200 hover:bg-verde-claro-vg/50 hover:text-gray-800">Veterinarios</Link>
+                                    <Link to="/usuarios" className="font-poppins text-gray-500 text-sm lg:text-base px-4 py-2 rounded-full transition-colors duration-200 hover:bg-verde-claro-vg/50 hover:text-gray-800">Usuarios</Link>
                                     <Link to="/tratamientos" className="font-poppins text-gray-500 text-sm lg:text-base px-4 py-2 rounded-full transition-colors duration-200 hover:bg-verde-claro-vg/50 hover:text-gray-800">Tratamientos</Link>
                                 </>
                             )}   
@@ -155,7 +155,7 @@ export default function Navbar() {
                         
                         {isAdmin && (
                             <>
-                                <Link to="/veterinarios" onClick={() => setMobileMenuOpen(false)} className="block font-poppins text-white font-bold text-sm lg:text-base hover:text-white/30">Veterinarios</Link>
+                                <Link to="/usuarios" onClick={() => setMobileMenuOpen(false)} className="block font-poppins text-white font-bold text-sm lg:text-base hover:text-white/30">Usuarios</Link>
                                 <Link to="/tratamientos" onClick={() => setMobileMenuOpen(false)} className="block font-poppins text-white font-bold text-sm lg:text-base hover:text-white/30">Tratamientos</Link>
                             </>
                         )}

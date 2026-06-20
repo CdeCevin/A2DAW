@@ -161,8 +161,8 @@ function TratamientosPage(){
             <div className=" pt-20 sm:pt-24 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto">
                 <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
-                    <span className="font-montserrat text-lg lg:text-2xl">Tratamientos</span>
-                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} - Costo: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
+                    <span className="font-montserrat text-xl lg:text-2xl">Tratamientos</span>
+                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} - <br className="lg:hidden"/> Costo: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
                 </div>
                 <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Añadir</Button>
                 </div>
