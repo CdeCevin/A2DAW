@@ -190,9 +190,9 @@ function CitasPage(){
                 value={busqueda}
                 onChange={(e) => setBusqueda(e?.target?.value ?? e)}
             >
-                <SearchField.Group>
+                <SearchField.Group className="border border-gray-100">
                     <SearchField.SearchIcon />
-                    <SearchField.Input className="w-[280]" placeholder="Buscar mascota, veterinario, razón..."  />
+                    <SearchField.Input  className="w-[280]" placeholder="Buscar mascota, veterinario, razón..."  />
                     <SearchField.ClearButton />
                 </SearchField.Group>
             </SearchField>
