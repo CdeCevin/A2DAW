@@ -186,7 +186,7 @@ function CitasPage(){
             <div>
             <SearchField 
                 name="search" 
-                className="mt-5 mb-5 "
+                className="mt-5 mb-2 lg:mb-0  "
                 value={busqueda}
                 onChange={(e) => setBusqueda(e?.target?.value ?? e)}
             >
@@ -203,7 +203,7 @@ function CitasPage(){
                         
                 {isAdmin && (
                     <>
-                    <Table className=" bg-white border mt-5" >
+                    <Table className=" bg-white border mt-1 mb-4 lg:mt-5" >
                     <Table.ScrollContainer>
                         <Table.Content aria-label="Custom styled table">
                         <Table.Header className="bg-gray-100">
@@ -229,9 +229,9 @@ function CitasPage(){
                                         minute: "2-digit",
                                         hour12: false 
                                     })}</Table.Cell>
-                                    <Table.Cell>{data.mascota.nombre}</Table.Cell>
-                                    <Table.Cell>{data.motivo}</Table.Cell>
-                                    <Table.Cell>{data.veterinario.name}</Table.Cell>   
+                                    <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.mascota.nombre}</Table.Cell>
+                                    <Table.Cell>{data.motivo ? data.motivo : "-"}</Table.Cell>
+                                    <Table.Cell className=" text-slate-600">{"Dr. "+data.veterinario.name}</Table.Cell>  
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
                                             <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
@@ -253,7 +253,7 @@ function CitasPage(){
                 )}
                 {isUser && (
                     <>
-                    <Table className=" bg-white">
+                    <Table className=" bg-white border mt-1 mb-4 lg:mt-5" >
                     <Table.ScrollContainer>
                         <Table.Content aria-label="Custom styled table">
                         <Table.Header className="bg-gray-100">
@@ -279,9 +279,9 @@ function CitasPage(){
                                         minute: "2-digit",
                                         hour12: false 
                                     })}</Table.Cell>
-                                    <Table.Cell>{data.mascota.nombre}</Table.Cell>
-                                    <Table.Cell>{data.motivo}</Table.Cell>
-                                    <Table.Cell>{data.veterinario.name}</Table.Cell>
+                                    <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.mascota.nombre}</Table.Cell>
+                                    <Table.Cell>{data.motivo ? data.motivo : "-"}</Table.Cell>
+                                    <Table.Cell className=" text-slate-600">{"Dr. "+data.veterinario.name}</Table.Cell>
                                 </Table.Row>
                                 
                             ))}     

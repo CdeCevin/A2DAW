@@ -51,7 +51,6 @@ export const AlertProvider = ({ children }) => {
                             
                             <AlertDialog.Footer>
                                 <Button 
-                                    slot="close" 
                                     variant={alertConfig.status === "danger" ? "danger" : "primary"}
                                     onPress={closeAlert}
                                 >

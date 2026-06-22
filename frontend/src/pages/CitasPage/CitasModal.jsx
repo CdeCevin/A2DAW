@@ -41,7 +41,7 @@ export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascot
     const handleSubmit = async (e) => {
         setLoading(true)
         e.preventDefault();
-        // enviamos datos de vuelta al componente padre
+        
         try {
             // Envio de datos y espera a termino de guardado
             await onSave(formData);
@@ -155,7 +155,7 @@ return (
               </Surface>
             </Modal.Body>
             <Modal.Footer>
-                <Button slot="close" variant="secondary" onPress={onClose}>
+                <Button variant="secondary" onPress={onClose}>
                     Cancelar
                 </Button>
                 <Button type="submit" isPending={isLoading}>

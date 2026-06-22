@@ -149,7 +149,7 @@ export default function DashbdPage() {
                     <Card className="flex flex-col flex-1 w-full bg-white border overflow-hidden">
                         <Card.Header className="flex flex-row items-center justify-between border-b border-solid">
                             <span className="p-3 text-md lg:text-lg font-semibold">{isAdmin ? "Citas Recientes" : "Próximas Citas"}</span>
-                            <Link to="/citas" className="font-poppins font-semibold text-aqua-vg text-sm lg:md px-4 py-2 hover:underline">Ver Todas</Link>
+                            <Link to="/citas" className="font-poppins font-semibold text-accent-aqua-vg/70 text-sm lg:md px-4 py-2 hover:underline">Ver Todas</Link>
                         </Card.Header>
                         <Card.Content className="flex-1 overflow-auto p-0">
                             {isAdmin && (
@@ -170,9 +170,9 @@ export default function DashbdPage() {
                                                 {datos?.citasRecientes?.map((data, key) =>(
                                                     <Table.Row key={key} className="border-b cursor-pointer hover:bg-gray-100 transition-colors">
                                                         <Table.Cell>{new Date(data.fecha).toLocaleString("es-CL", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false })}</Table.Cell>
-                                                        <Table.Cell>{data.mascota.nombre}</Table.Cell>
-                                                        <Table.Cell>{data.motivo}</Table.Cell>
-                                                        <Table.Cell>{data.veterinario.name}</Table.Cell>    
+                                                        <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.mascota.nombre}</Table.Cell>
+                                                        <Table.Cell className=" text-slate-600">{data.motivo ? data.motivo : "-"}</Table.Cell>
+                                                        <Table.Cell>{"Dr. "+data.veterinario.name}</Table.Cell>    
                                                     </Table.Row>
                                                 ))}     
                                             </Table.Body>
@@ -199,8 +199,8 @@ export default function DashbdPage() {
                                                     <Table.Row key={key} className="border-b cursor-pointer hover:bg-gray-100 transition-colors">
                                                         <Table.Cell>{new Date(data.fecha).toLocaleString("es-CL", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false })}</Table.Cell>
                                                         <Table.Cell>{data.mascota.nombre}</Table.Cell>
-                                                        <Table.Cell>{data.motivo}</Table.Cell>
-                                                        <Table.Cell>{data.veterinario.name}</Table.Cell>
+                                                        <Table.Cell className=" text-slate-600">{data.motivo ? data.motivo : "-"}</Table.Cell>
+                                                        <Table.Cell>{"Dr. "+data.veterinario.name}</Table.Cell>
                                                     </Table.Row>
                                                 ))}     
                                             </Table.Body>

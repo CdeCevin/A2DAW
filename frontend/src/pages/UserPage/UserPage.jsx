@@ -1,20 +1,21 @@
 import Navbar from "../NavBar/NavBar";
 import { Link, useNavigate } from "react-router-dom";
 import { getUsersApi, delUsersApi, editUsersApi, buscarUsersApi, crearUsersApi} from "../../api/usersApi";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, Table, EmptyState, SearchField, Button, Chip } from "@heroui/react";
+import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import  UserPageModal from "./UserPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
 
-function VetPage(){
+function UserPage(){
     const navigate = useNavigate();
     const { showAlert } = useGlobalAlert();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userSeleccionado, setUserSeleccionado] = useState(null);
     const [busqueda, setBusqueda] = useState("");
     const [datos, setDatos] = useState([]);
+    const [tabActivo, setTabActivo] = useState("all");
 
     const handleAbrirCrear = () => {
         setUserSeleccionado(null); // Null para crear
@@ -49,7 +50,7 @@ function VetPage(){
                 showAlert("¡Éxito!", "El usuario se guardó correctamente.", "success");
                 setIsModalOpen(false); 
                 
-                const usersActualizados = await getTratamientoApi();
+                const usersActualizados = await getUsersApi();
                 setDatos(Array.isArray(usersActualizados) ? usersActualizados : []);
 
             } catch (error) {
@@ -78,6 +79,7 @@ function VetPage(){
     // Información del usuario
     const [roles, setRoles] = useState([]);
     const [userName, setUserName] = useState("");
+    const [correoUserLogin, setCorreoUserLogin] = useState("");
 
     // Leer y decodificar el token al cargar el Navbar
     useEffect(() => {
@@ -90,7 +92,8 @@ function VetPage(){
                 
                 if (partes.length >= 3) {
                     setUserName(partes[1]); 
-                    setRoles(partes[2].split(',')); 
+                    setRoles(partes[2].split(','));
+                    setCorreoUserLogin(partes[0]); 
                 }
             } catch (error) {
                 console.error("Error al decodificar token en Navbar:", error);
@@ -104,6 +107,7 @@ function VetPage(){
         console.log('info')
         const resp = await getUsersApi()
         setDatos(resp)
+        setTabActivo("all")
         //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
         console.log(resp)
 
@@ -117,23 +121,59 @@ function VetPage(){
 
     const listaAFiltrar = Array.isArray(datos) ? datos :  [];
 
-    const userFiltrados = listaAFiltrar.filter((user) => {
-        if (!busqueda) return true;
+    const userFiltrados = useMemo(() => {
+        const listaAFiltrar = Array.isArray(datos) ? datos : [];
 
-        const termino = busqueda.toLowerCase();
-        
-        const nombreUsuario = user.nombre?.toLowerCase() || "";
-        const correoUsuario = user.correo?.toLowerCase() || "";
-        const especialidadUsuario = user.especialidad?.toLowerCase() || "";
+        return listaAFiltrar.filter((user) => {
+            // Búsqueda de texto
+            let cumpleBusqueda = true;
+            if (busqueda) {
+                const termino = busqueda.toLowerCase();
+                const nombreUsuario = user.name?.toLowerCase() || "";
+                const correoUsuario = user.correo?.toLowerCase() || "";
+                const especialidadUsuario = user.especialidad?.toLowerCase() || "";
 
-        return nombreUsuario.includes(termino) || 
-               correoUsuario.includes(termino) || 
-               especialidadUsuario.includes(termino);
-    });
+                cumpleBusqueda = nombreUsuario.includes(termino) || 
+                                 correoUsuario.includes(termino) || 
+                                 especialidadUsuario.includes(termino);
+            }
+
+            // Pestaña seleccionada (Tab)
+            let cumpleTab = true;
+            if (tabActivo === "vets") {
+                cumpleTab = user.roles?.includes("admin") || !!user.especialidad;
+            } else if (tabActivo === "receps") {
+                cumpleTab = !user.roles?.includes("admin") && !user.especialidad;
+            }
+
+            
+            return cumpleBusqueda && cumpleTab;
+        });
+    }, [datos, busqueda, tabActivo]);
+    
 
     // Renderizado condicional
     const isAdmin = roles.includes("ROLE_ADMIN");
     const isUser = roles.includes("ROLE_USER");
+
+    const counts = useMemo(() => {
+    let vetsCount = 0;
+    let recepCount = 0;
+
+    datos.forEach((usuario) => {
+      // Revisa si contiene rol admin o posee especialidad (veterinario)
+      if (usuario.roles?.includes("admin") || usuario.especialidad) {
+        vetsCount++;
+      } else {
+        recepCount++;
+      }
+    });
+
+    return {
+      vets: vetsCount,
+      recep: recepCount,
+    };
+  }, [datos]);
     
     return(
         <>
@@ -154,26 +194,63 @@ function VetPage(){
                 className="mt-5"
                 value={busqueda}
                 onChange={(e) => setBusqueda(e?.target?.value ?? e)}
-            >
-                <SearchField.Group>
+                aria-label="Buscador de usuarios"
+                >
+                <SearchField.Group className="border border-gray-100">
                     <SearchField.SearchIcon />
-                    <SearchField.Input className="w-[280]" placeholder="Buscar nombre, correo, especialidad.."  />
+                    <SearchField.Input className="w-[280] " placeholder="Buscar nombre, correo, especialidad.."  />
                     <SearchField.ClearButton />
                 </SearchField.Group>
             </SearchField>
-            
+            <Tabs 
+                className="w-full max-w-md mt-4"
+                selectedKey={tabActivo}
+                onSelectionChange={(key) => setTabActivo(String(key))}> 
+                <Tabs.ListContainer>
+                    <Tabs.List aria-label="Options">
+                    <Tabs.Tab id="all">
+                        <div className="flex items-center gap-2">
+                            <span>Todos</span>
+                            <Chip size="sm" className="bg-aqua-vg/20 text-slate-500 font-semibold border-none">
+                                {datos.length}
+                            </Chip>
+                            </div>
+                        <Tabs.Indicator />
+                    </Tabs.Tab>
+                    <Tabs.Tab id="vets">
+                        <div className="flex items-center gap-2">
+                            <span>Veterinarios</span>
+                            <Chip size="sm" className="bg-aqua-vg/20 text-slate-500 font-semibold border-none">
+                                {counts.vets}
+                            </Chip>
+                            </div>
+                        <Tabs.Indicator />
+                    </Tabs.Tab>
+                    <Tabs.Tab id="receps">
+                        <div className="flex items-center gap-2">
+                            <span>Recepcionistas</span>
+                            <Chip size="sm" className="bg-aqua-vg/20 text-slate-500 font-semibold border-none">
+                                {counts.recep}
+                            </Chip>
+                            </div>
+                        <Tabs.Indicator />
+                    </Tabs.Tab>
+                    </Tabs.List>
+                </Tabs.ListContainer>
+                </Tabs>
             </div>
             
             <div className="flex flex-col lg:flex-row gap-2 ustify-evenly max-w-screen">
 
                     <>
-                    <Table className=" bg-white border mt-5" >
+                    <Table className=" bg-white border mt-4 mb-4 lg:mt-5" >
                     <Table.ScrollContainer>
                         <Table.Content aria-label="Custom styled table">
                         <Table.Header className="bg-gray-100">
                             <Table.Column isRowHeader>Usuario</Table.Column>
                             <Table.Column >Email</Table.Column>
                             <Table.Column>Rol</Table.Column>
+                            <Table.Column>Especialidad</Table.Column>
                             <Table.Column>Acciones</Table.Column>
                         </Table.Header>
                         <Table.Body 
@@ -184,20 +261,33 @@ function VetPage(){
                         )}>
                             {userFiltrados.map((data, key) =>(
                                 <Table.Row id={key} className="border-b">
-                                    <Table.Cell>{data.name}</Table.Cell>
+                                    <Table.Cell>
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <Avatar color={data.especialidad ? "success" : "primary"} variant="soft" >
+                                                <Avatar.Fallback>{data.name.match(/\b(\w)/g).join('')}</Avatar.Fallback>
+                                            </Avatar>
+                                            {data.name}
+                                            
+                                        </div>
+                                    </Table.Cell>
                                     <Table.Cell>{data.correo}</Table.Cell>
                                     
                                     <Table.Cell>
-                                        <Chip color="success" variant="soft" className='flex justify-center' >
-                                                <Chip.Label>{data.roles = "admin" ? "Veterinario":"Recepcionista"}</Chip.Label>
+                                        <Chip 
+                                            color={data.especialidad ? "success" : "primary"} 
+                                            variant="soft"  
+                                            className="flex justify-center w-36" 
+                                        >
+                                                <Chip.Label>{data.especialidad ? "Veterinario":"Recepcionista"}</Chip.Label>
                                         </Chip>
                                     </Table.Cell>   
+                                    <Table.Cell>{data.especialidad ? data.especialidad : "-"}</Table.Cell> 
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
-                                            <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
+                                            <Button aria-label="Editar usuario" isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button aria-label="Eliminar usuario" isDisabled={data.correo == correoUserLogin  } isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
@@ -216,12 +306,13 @@ function VetPage(){
             <UserPageModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
-                tratActual={userSeleccionado}
+                userActual={userSeleccionado}
                 onSave={handleGuardarUser}
+               
             />
             </>
         );
 }
 
 
-export default VetPage;
+export default UserPage;

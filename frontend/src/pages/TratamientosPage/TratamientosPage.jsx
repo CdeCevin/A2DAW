@@ -207,8 +207,8 @@ function TratamientosPage(){
                         )}>
                             {tratFiltrados.map((data, key) =>(
                                 <Table.Row id={key} className="border-b">
-                                    <Table.Cell>{data.cita.mascota?.nombre || ""}</Table.Cell>
-                                    <Table.Cell>{new Date(data.cita.fecha).toLocaleString("es-CL", {
+                                    <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.cita.mascota?.nombre || ""}</Table.Cell>
+                                    <Table.Cell className=" text-slate-600">{new Date(data.cita.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
                                         month: "2-digit",
                                         year: "numeric",
@@ -217,7 +217,7 @@ function TratamientosPage(){
                                         hour12: false 
                                     })}</Table.Cell>
                                     
-                                    <Table.Cell>{data.cita.veterinario?.name || ""}</Table.Cell>   
+                                    <Table.Cell className=" text-slate-600">{"Dr. "+ data.cita.veterinario?.name || ""}</Table.Cell>   
                                     <Table.Cell>{data.descripcion}</Table.Cell>
                                     <Table.Cell>{new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(data.costo)}</Table.Cell>
                                     <Table.Cell>
