@@ -127,7 +127,8 @@ export default function DashbdPage() {
             <div className="flex flex-col gap-4 flex-1">
                 {/* cards arriba*/}
                 <div className="grid grid-cols-2 lg:flex lg:flex-row gap-4 justify-evenly max-w-screen">
-                    {cards.map((card, key) =>(
+                    {isAdmin && (
+                        cards.map((card, key) =>(
                         <Card key={key} className="w-full max-w-md bg-white border">
                             <Card.Content>
                                 <div className="flex flex-row items-center gap-5">
@@ -141,7 +142,26 @@ export default function DashbdPage() {
                                 </div>
                             </Card.Content>
                         </Card>
-                    ))}
+                    ))
+                    )}
+                    {isUser && (
+                        cards.slice(0,3).map((card, key) =>(
+                        <Card key={key} className="w-full max-w-md bg-white border">
+                            <Card.Content>
+                                <div className="flex flex-row items-center gap-5">
+                                    <div className={` flex size-12 items-center justify-center rounded-xl ${card.colorfondo}`}>
+                                        <card.icon className={`w-6 h-6 sm:w-6 sm:h-6 ${card.color}  `}/>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-2xl">{datos?.[card.dataKey] ?? "..."}</span>
+                                        <span className=" text-sm lg:text-md text-gray-600" >{card.desc}</span>
+                                    </div>
+                                </div>
+                            </Card.Content>
+                        </Card>
+                    ))
+                    )}
+                    
                 </div>
 
                 {/* cards abajo*/}
@@ -161,6 +181,7 @@ export default function DashbdPage() {
                                                 <Table.Column>Mascota</Table.Column>
                                                 <Table.Column>Razón</Table.Column>
                                                 <Table.Column>Veterinario</Table.Column>
+                                                <Table.Column>Diagnóstico</Table.Column>
                                             </Table.Header>
                                             <Table.Body renderEmptyState={() => (
                                                 <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
@@ -173,6 +194,8 @@ export default function DashbdPage() {
                                                         <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.mascota.nombre}</Table.Cell>
                                                         <Table.Cell className=" text-slate-600">{data.motivo ? data.motivo : "-"}</Table.Cell>
                                                         <Table.Cell>{"Dr. "+data.veterinario.name}</Table.Cell>    
+                                                        <Table.Cell className=" text-slate-600">{data.diagnostico ? data.diagnostico : "-"}</Table.Cell>  
+                                                        
                                                     </Table.Row>
                                                 ))}     
                                             </Table.Body>
@@ -189,6 +212,7 @@ export default function DashbdPage() {
                                                 <Table.Column>Mascota</Table.Column>
                                                 <Table.Column>Razón</Table.Column>
                                                 <Table.Column>Veterinario</Table.Column>
+                                                <Table.Column>Diagnóstico</Table.Column>
                                             </Table.Header>
                                             <Table.Body renderEmptyState={() => (
                                                 <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
@@ -201,6 +225,8 @@ export default function DashbdPage() {
                                                         <Table.Cell>{data.mascota.nombre}</Table.Cell>
                                                         <Table.Cell className=" text-slate-600">{data.motivo ? data.motivo : "-"}</Table.Cell>
                                                         <Table.Cell>{"Dr. "+data.veterinario.name}</Table.Cell>
+                                                        <Table.Cell className=" text-slate-600">{data.diagnostico ? data.diagnostico : "-"}</Table.Cell>
+
                                                     </Table.Row>
                                                 ))}     
                                             </Table.Body>

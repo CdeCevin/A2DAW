@@ -85,7 +85,7 @@ return (
     
       <Modal.Backdrop>
         <Modal.Container placement="auto">
-          <Modal.Dialog className="sm:max-w-md lg:max-w-lg">
+          <Modal.Dialog className="sm:max-w-md lg:max-w-lg overflow-y-scroll">
             <Modal.CloseTrigger />
             <Modal.Header>
               <Modal.Heading className='font-montserrat text-xl'>{userActual ? "Editar Usuario" : "Añadir Nuevo Usuario"}</Modal.Heading>
@@ -180,7 +180,7 @@ return (
                         {formData.roles === "Veterinario" && (
                         <Select 
                             isRequired 
-                            className="w-full mb-4" 
+                            className="w-full" 
                             placeholder="Seleccionar especialidad..." 
                             selectedKey={formData.especialidad || null} 
                             onSelectionChange={(id) => setFormData({ ...formData, especialidad: id})}

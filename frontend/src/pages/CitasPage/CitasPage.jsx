@@ -211,6 +211,7 @@ function CitasPage(){
                             <Table.Column>Mascota</Table.Column>
                             <Table.Column>Razón</Table.Column>
                             <Table.Column>Veterinario</Table.Column>
+                            <Table.Column>Diagnóstico</Table.Column>
                             <Table.Column>Acciones</Table.Column>
                         </Table.Header>
                         <Table.Body 
@@ -232,6 +233,7 @@ function CitasPage(){
                                     <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.mascota.nombre}</Table.Cell>
                                     <Table.Cell>{data.motivo ? data.motivo : "-"}</Table.Cell>
                                     <Table.Cell className=" text-slate-600">{"Dr. "+data.veterinario.name}</Table.Cell>  
+                                    <Table.Cell className=" text-slate-600">{data.diagnostico ? data.diagnostico : "-"}</Table.Cell>
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
                                             <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
@@ -301,6 +303,7 @@ function CitasPage(){
                 onSave={handleGuardarCita}
                 veterinarios={veterinarios}
                 mascotas={mascotas}
+                isAdmin={isAdmin}
             />
             </>
         );

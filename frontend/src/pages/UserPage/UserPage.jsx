@@ -186,8 +186,6 @@ function UserPage(){
                 </div>
                 <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Añadir</Button>
                 </div>
-                
-
             <div>
             <SearchField 
                 name="search" 
@@ -284,10 +282,10 @@ function UserPage(){
                                     <Table.Cell>{data.especialidad ? data.especialidad : "-"}</Table.Cell> 
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
-                                            <Button aria-label="Editar usuario" isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
+                                            <Button aria-label="Editar usuario" isDisabled={data.especialidad && data.correo != correoUserLogin  } isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button aria-label="Eliminar usuario" isDisabled={data.correo == correoUserLogin  } isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button aria-label="Eliminar usuario" isDisabled={data.correo == correoUserLogin } isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             

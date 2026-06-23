@@ -4,13 +4,14 @@ import { Mail } from 'lucide-react';
 import {I18nProvider} from "react-aria-components";
 import { parseDateTime } from "@internationalized/date";
 
-export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascotas, veterinarios }) {
+export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascotas, veterinarios, isAdmin }) {
     const [isLoading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
             mascota: {id:""},
             fecha: "",
             motivo: "",
-            veterinario: {id:""}
+            veterinario: {id:""},
+            diagnostico: ""
         });
 
         useEffect(() => {
@@ -22,6 +23,7 @@ export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascot
             setFormData({
                 fecha: citaActual.fecha || "",
                 motivo: citaActual.motivo || "",
+                diagnostico: citaActual.diagnostico || "",
                 mascota: { id: citaActual.mascota?.id ? String(citaActual.mascota.id) : "" },
                 veterinario: { id: citaActual.veterinario?.id ? String(citaActual.veterinario.id) : "" }
             });
@@ -31,7 +33,8 @@ export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascot
                 fecha: "", 
                 motivo: "",
                 mascota: { id: "" },
-                veterinario: { id: "" }
+                veterinario: { id: "" },
+                diagnostico: ""
             });
         }
     }
@@ -148,8 +151,14 @@ return (
                     </I18nProvider>
                   <TextField className="w-full" name="razon" variant="primary" value={formData.motivo} onChange={(value) => setFormData({ ...formData, motivo: value })}>
                     <Label>Razón de la visita</Label>
-                    <Input className="border border-gray-100" placeholder="Ej. Checkeo anual" />
+                    <Input className="border border-gray-100" placeholder="Ej. Chequeo anual" />
                   </TextField>
+                  {isAdmin && (
+                  <TextField className="w-full mt-4" name="razon" variant="primary" value={formData.diagnostico} onChange={(value) => setFormData({ ...formData, dignostico: value })}>
+                    <Label>Diagnóstico</Label>
+                    <Input className="border border-gray-100" placeholder="Hallazgos clínicos..." />
+                  </TextField>
+                  )}
                   
                 
               </Surface>
