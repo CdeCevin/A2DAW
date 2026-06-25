@@ -18,7 +18,7 @@ public class MascotaDtoOut {
     private String especie;
     private String raza;
     private LocalDate fechaNacimiento;
-    private DuenioDtoOut duenio;
+    private DuenioResumenDto duenio;
 
     public static MascotaDtoOut fromEntity(Mascota m) {
         if (m == null) return null;
@@ -28,7 +28,7 @@ public class MascotaDtoOut {
             m.getEspecie(),
             m.getRaza(),
             m.getFechaNacimiento(),
-            DuenioDtoOut.fromEntity(m.getDuenio())
+            DuenioResumenDto.fromEntity(m.getDuenio())
         );
     }
 }
