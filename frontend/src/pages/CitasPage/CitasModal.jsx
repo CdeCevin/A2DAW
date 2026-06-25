@@ -154,7 +154,7 @@ return (
                     <Input className="border border-gray-100" placeholder="Ej. Chequeo anual" />
                   </TextField>
                   {isAdmin && (
-                  <TextField className="w-full mt-4" name="razon" variant="primary" value={formData.diagnostico} onChange={(value) => setFormData({ ...formData, dignostico: value })}>
+                  <TextField className="w-full mt-4" name="razon" variant="primary" value={formData.diagnostico} onChange={(value) => setFormData({ ...formData, diagnostico: value })}>
                     <Label>Diagnóstico</Label>
                     <Input className="border border-gray-100" placeholder="Hallazgos clínicos..." />
                   </TextField>

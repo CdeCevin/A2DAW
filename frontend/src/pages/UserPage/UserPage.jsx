@@ -201,11 +201,11 @@ function UserPage(){
                 </SearchField.Group>
             </SearchField>
             <Tabs 
-                className="w-full max-w-md mt-4"
+                className="w-full flex flex-col lg:flex-row max-w-md mt-4"
                 selectedKey={tabActivo}
                 onSelectionChange={(key) => setTabActivo(String(key))}> 
                 <Tabs.ListContainer>
-                    <Tabs.List aria-label="Options">
+                    <Tabs.List aria-label="Options" className="flex flex-col md:flex-row ">
                     <Tabs.Tab id="all">
                         <div className="flex items-center gap-2">
                             <span>Todos</span>
