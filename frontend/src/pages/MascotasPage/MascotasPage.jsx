@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import { Card, SearchField, Button } from "@heroui/react";
 import { SquarePen, Trash2, PawPrint } from "lucide-react";
 import  MascotasPageModal from "./MascotasPageModal";
+import  MascotasHistorialModal from "./MascotasHistorialModal";
 import { useGlobalAlert } from "../../store/alert-context";
 
 function MascotasPage(){
@@ -15,6 +16,7 @@ function MascotasPage(){
     const [busqueda, setBusqueda] = useState("");
     const [datos, setDatos] = useState([]);
     const [duenos, setDuenos] = useState([]);
+    const [isModalHMOpen, setIsModalHMOpen] = useState(false);
 
     const handleAbrirCrear = () => {
         setMascotaSeleccionada(null); // Null para crear
@@ -25,6 +27,11 @@ function MascotasPage(){
         setMascotaSeleccionada(masc); // Datos de la fila a editar
         console.log(masc)
         setIsModalOpen(true);
+    };
+
+    const handleAbrirHistorial = (masc) => {
+        setMascotaSeleccionada(masc); // Null para crear
+        setIsModalHMOpen(true);
     };
 
     const handleGuardarMascota = async (datosFormulario) => {
@@ -213,7 +220,7 @@ function MascotasPage(){
                                 <hr className="border-t border-gray-300 my-2" />
                                 {isAdmin && (
                                     <div className="flex flex-row gap-2 items-center justify-between">
-                                    <Button className="bg-success-soft text-accent-aqua-vg w-full" onPress={() => handleAbrirEditar(mascota)}>
+                                    <Button className="bg-success-soft text-accent-aqua-vg w-full" onPress={() => handleAbrirHistorial(mascota)}>
                                         Ver Historial Médico
                                     </Button>
                                     <Button aria-label="Editar Mascota" isIconOnly size="lg"  className="bg-white text-accent-aqua-vg hover:bg-success-soft" onPress={() => handleAbrirEditar(mascota)}>
@@ -226,7 +233,7 @@ function MascotasPage(){
                                 )}
                                 {isUser && (
                                 <div className="flex flex-row gap-2 items-center justify-between">
-                                    <Button className="bg-success-soft text-accent-aqua-vg w-full" onPress={() => handleAbrirEditar(mascota)}>
+                                    <Button className="bg-success-soft text-accent-aqua-vg w-full" onPress={() => handleAbrirHistorial(mascota)}>
                                         Ver Historial Médico
                                     </Button>
                                 </div>
@@ -238,6 +245,7 @@ function MascotasPage(){
             </div>
                 
             </div>
+            {mascotaSeleccionada && (
             <MascotasPageModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
@@ -245,7 +253,13 @@ function MascotasPage(){
                 onSave={handleGuardarMascota}
                 duenos={duenos}
                
-            />
+            />)}
+            {mascotaSeleccionada && (
+            <MascotasHistorialModal 
+                isOpen={isModalHMOpen} 
+                onClose={() => setIsModalHMOpen(false)} 
+                mascotaActual={mascotaSeleccionada}
+            />)}
             </>
         );
 }
