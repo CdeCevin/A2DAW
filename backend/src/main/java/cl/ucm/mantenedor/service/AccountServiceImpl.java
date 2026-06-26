@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,7 @@ public class AccountServiceImpl implements AccountService{
         u.setCorreo(in.getCorreo());
         u.setPassword(encoder.encode(in.getPassword()));
         u.setName(in.getName());
-        u.setRoles(List.of(rol));
+        u.setRoles(new ArrayList<>(List.of(rol)));
         u.setEspecialidad(in.getEspecialidad());
 
         return toDto(repository.save(u));
@@ -120,7 +121,11 @@ public class AccountServiceImpl implements AccountService{
         if (details.getIdRol() != null && details.getIdRol() > 0) {
             Rol rol = rolRepository.findById(details.getIdRol())
                     .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado"));
-            existing.setRoles(List.of(rol));
+            if (existing.getRoles() == null) {
+                existing.setRoles(new ArrayList<>());
+            }
+            existing.getRoles().clear();
+            existing.getRoles().add(rol);
         }
         if (details.getEspecialidad() != null) {
             existing.setEspecialidad(details.getEspecialidad());
