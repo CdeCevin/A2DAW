@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController {
@@ -39,22 +41,15 @@ public class DashboardController {
         long totalCitas = citaRepository.count();
         long totalTratamientos = tratamientoRepository.count();
 
-        // Obtenemos todas las citas
-        List<Cita> todasLasCitas = citaRepository.findAll();
+        PageRequest pageRequest = PageRequest.of(0, limit);
 
         // Citas recientes (ordenadas por fecha descendente)
-        List<Cita> recientes = todasLasCitas.stream()
-                .sorted((c1, c2) -> c2.getFecha().compareTo(c1.getFecha()))
-                .limit(limit)
-                .collect(Collectors.toList());
+        List<Cita> recientes = citaRepository.findByOrderByFechaDesc(pageRequest);
 
         // Citas próximas (futuras, ordenadas por fecha ascendente)
         LocalDateTime ahora = LocalDateTime.now();
-        List<Cita> proximas = todasLasCitas.stream()
-                .filter(c -> c.getFecha().isAfter(ahora))
-                .sorted((c1, c2) -> c1.getFecha().compareTo(c2.getFecha()))
-                .limit(limit)
-                .collect(Collectors.toList());
+        List<Cita> proximas = citaRepository.findByFechaAfterOrderByFechaAsc(ahora, pageRequest);
+
 
         data.put("totalDuenos", totalDuenos);
         data.put("totalMascotas", totalMascotas);
