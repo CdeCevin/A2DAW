@@ -100,7 +100,7 @@ return (
                             <Select.Popover>
                                 <ListBox>
                                     {especies.map((esp, key) => (
-                                    <ListBox.Item id={esp}>{esp}</ListBox.Item>
+                                    <ListBox.Item key={key}id={esp}>{esp}</ListBox.Item>
                                     ))}
                                 </ListBox>
                             </Select.Popover>
@@ -186,14 +186,14 @@ return (
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onPress={onClose}>
-                    Cancelar
+                    <span>Cancelar</span>
                 </Button>
                 <Button type="submit" isPending={isLoading}>
                 {({isPending}) => (
-                    <>
+                    <span>
                     {isPending ? <Spinner color="current" size="sm" /> : ""}
                     {isPending ? "Cargando..." : (mascotaActual? "Editar" : "Añadir")}
-                    </>
+                    </span>
                 )}
                 </Button>
                 </Modal.Footer>

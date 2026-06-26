@@ -152,7 +152,7 @@ function DuenosPage(){
                 {isUser && (
                 <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
-                    <span className="font-montserrat text-xl lg:text-2xl"> Dueñps</span>
+                    <span className="font-montserrat text-xl lg:text-2xl"> Dueños</span>
                     <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Dueños: {datos.length} </span>
                 </div>
                 </div>)}
@@ -193,11 +193,11 @@ function DuenosPage(){
                             </EmptyState>
                         )}>
                             {duenosFiltrados.map((data, key) =>(
-                                <Table.Row id={key} className="border-b">
+                                <Table.Row id={key} key={key} className="border-b">
                                     <Table.Cell>
                                         <div className="flex flex-row gap-2 items-center">
                                             <Avatar color="primary" variant="soft" >
-                                                <Avatar.Fallback>{data.nombreCompleto.match(/\b(\w)/g).join('')}</Avatar.Fallback>
+                                                <Avatar.Fallback>{data.nombreCompleto?.match(/\b(\w)/g)?.join('') || "U"}</Avatar.Fallback>
                                             </Avatar>
                                             {data.nombreCompleto}
                                             
@@ -207,13 +207,20 @@ function DuenosPage(){
                                     
                                     <Table.Cell>{data.telefono}</Table.Cell> 
 
-                                    <Table.Cell><Chip 
-                                            color="success" 
-                                            variant="soft"  
-                                            className="flex justify-center w-16" 
+                                    <Table.Cell>
+                                        <Button 
+                                            variant="light" 
+                                            className="p-0 min-w-0 h-auto hover:bg-transparent"
+                                            onPress={() => navigate("/mascotas", { state: { filtrarPorDueno: data.nombreCompleto } })}
                                         >
-                                                <Chip.Label>{data.mascotas ? data.mascotas:"0"}</Chip.Label>
-                                        </Chip>
+                                            <Chip 
+                                                color="success" 
+                                                variant="soft"  
+                                                className="flex justify-center w-16 cursor-pointer hover:scale-105 transition-transform" 
+                                            >
+                                                <Chip.Label>{data.mascotas ? data.mascotas.length : "0"}</Chip.Label>
+                                            </Chip>
+                                        </Button>
                                     </Table.Cell> 
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
@@ -251,7 +258,7 @@ function DuenosPage(){
                             </EmptyState>
                         )}>
                             {duenosFiltrados.map((data, key) =>(
-                                <Table.Row id={key} className="border-b">
+                                <Table.Row id={key} key={key} className="border-b">
                                     <Table.Cell>
                                         <div className="flex flex-row gap-2 items-center">
                                             <Avatar color="primary" variant="soft" >
@@ -270,7 +277,7 @@ function DuenosPage(){
                                             variant="soft"  
                                             className="flex justify-center w-16" 
                                         >
-                                                <Chip.Label>{data.mascotas ? data.mascotas:"0"}</Chip.Label>
+                                                <Chip.Label>{data.mascotas ? data.mascotas.length:"0"}</Chip.Label>
                                         </Chip>
                                     </Table.Cell> 
                                       
@@ -285,6 +292,7 @@ function DuenosPage(){
                 </div>
                 
             </div>
+            
             <DuenosPageModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 

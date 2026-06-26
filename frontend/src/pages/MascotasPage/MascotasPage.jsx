@@ -8,6 +8,7 @@ import { SquarePen, Trash2, PawPrint } from "lucide-react";
 import  MascotasPageModal from "./MascotasPageModal";
 import  MascotasHistorialModal from "./MascotasHistorialModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function MascotasPage(){
     const { showAlert } = useGlobalAlert();
@@ -17,6 +18,8 @@ function MascotasPage(){
     const [datos, setDatos] = useState([]);
     const [duenos, setDuenos] = useState([]);
     const [isModalHMOpen, setIsModalHMOpen] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const handleAbrirCrear = () => {
         setMascotaSeleccionada(null); // Null para crear
@@ -115,6 +118,16 @@ function MascotasPage(){
             }
         }
     }, []);
+
+    useEffect(() => {
+        // Si existe un estado en la ruta trae la propiedad 'filtrarPorDueno'
+        if (location.state?.filtrarPorDueno) {
+            setBusqueda(location.state.filtrarPorDueno);
+            //Limpiar estado de la ruta para quitarlo de futuras navegaciones
+            
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location, navigate]);
   
     
     useEffect(() => {
@@ -192,8 +205,9 @@ function MascotasPage(){
                     </SearchField.Group>
                 </SearchField>
             </div>
-            
+             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:justify-evenly max-w-screen mt-4 mb-4">
+            {mascotasFiltradas.length>0 ? <>    
                 {mascotasFiltradas.map((mascota, key) =>( 
                     
                     <Card key={key} className="w-full max-w-md bg-white border">
@@ -205,7 +219,7 @@ function MascotasPage(){
                                 <div className="flex flex-col">
                                     <span className="font-bold text-lg">{mascota.nombre}</span>
                                     
-                                    <span className=" text-sm lg:text-md text-gray-600" >{mascota.especie} - {mascota.raza}</span>
+                                    <span className=" text-sm lg:text-md text-gray-600" >{mascota.especie} • {mascota.raza}</span>
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
@@ -241,11 +255,15 @@ function MascotasPage(){
                             </div>
                         </Card.Content>
                     </Card>
-                ))}
+                ))} </> : 
+                <div className="flex ">
+                <span className="text-sm text-gray-500"> No se encontraron resultados.</span>
+                </div>
+                }
             </div>
                 
             </div>
-            {mascotaSeleccionada && (
+            
             <MascotasPageModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
@@ -253,7 +271,7 @@ function MascotasPage(){
                 onSave={handleGuardarMascota}
                 duenos={duenos}
                
-            />)}
+            />
             {mascotaSeleccionada && (
             <MascotasHistorialModal 
                 isOpen={isModalHMOpen} 

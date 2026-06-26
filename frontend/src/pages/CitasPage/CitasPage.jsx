@@ -179,12 +179,13 @@ function CitasPage(){
                     <span className="font-montserrat text-xl lg:text-2xl">Citas</span>
                     <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Citas totales: {datos.length} </span>
                 </div>
-                <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Agendar</Button>
+                <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg"><span>+ Agendar</span></Button>
                 </div>
                 
 
             <div>
             <SearchField 
+                aria-label="Buscar Citas"
                 name="search" 
                 className="mt-5 mb-2 lg:mb-0  "
                 value={busqueda}
@@ -221,7 +222,7 @@ function CitasPage(){
                             </EmptyState>
                         )}>
                             {citasFiltradas.map((data, key) =>(
-                                <Table.Row id={key} className="border-b">
+                                <Table.Row key={key} id={key} className="border-b">
                                     <Table.Cell>{new Date(data.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
                                         month: "2-digit",
@@ -236,10 +237,10 @@ function CitasPage(){
                                     <Table.Cell className=" text-slate-600">{data.diagnostico ? data.diagnostico : "-"}</Table.Cell>
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
-                                            <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
+                                            <Button isIconOnly aria-label="Editar Cita" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Cita" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             

@@ -258,7 +258,7 @@ function UserPage(){
                             </EmptyState>
                         )}>
                             {userFiltrados.map((data, key) =>(
-                                <Table.Row id={key} className="border-b">
+                                <Table.Row id={key} key={key} className="border-b">
                                     <Table.Cell>
                                         <div className="flex flex-row gap-2 items-center">
                                             <Avatar color={data.especialidad ? "success" : "primary"} variant="soft" >

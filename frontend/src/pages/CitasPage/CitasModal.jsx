@@ -165,14 +165,14 @@ return (
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onPress={onClose}>
-                    Cancelar
+                    <span>Cancelar</span>
                 </Button>
                 <Button type="submit" isPending={isLoading}>
                 {({isPending}) => (
-                    <>
+                    <span>
                     {isPending ? <Spinner color="current" size="sm" /> : ""}
                     {isPending ? "Cargando..." : (citaActual? "Editar" : "Agendar")}
-                    </>
+                    </span>
                 )}
                 </Button>
                 </Modal.Footer>

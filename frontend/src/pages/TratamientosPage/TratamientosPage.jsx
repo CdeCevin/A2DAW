@@ -162,7 +162,7 @@ function TratamientosPage(){
                 <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
                     <span className="font-montserrat text-xl lg:text-2xl">Tratamientos</span>
-                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} - <br className="lg:hidden"/> Costo: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
+                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} • <br className="lg:hidden"/> Valor Total: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
                 </div>
                 <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Añadir</Button>
                 </div>
@@ -170,6 +170,7 @@ function TratamientosPage(){
 
             <div>
             <SearchField 
+                aria-label="Buscar Tratamiento"
                 name="search" 
                 className="mt-5"
                 value={busqueda}
@@ -196,7 +197,7 @@ function TratamientosPage(){
                             <Table.Column >Cita</Table.Column>
                             <Table.Column>Veterinario</Table.Column>
                             <Table.Column>Descripción</Table.Column>
-                            <Table.Column>Costo</Table.Column>
+                            <Table.Column>Valor</Table.Column>
                             <Table.Column>Acciones</Table.Column>
                         </Table.Header>
                         <Table.Body 
@@ -206,7 +207,7 @@ function TratamientosPage(){
                             </EmptyState>
                         )}>
                             {tratFiltrados.map((data, key) =>(
-                                <Table.Row id={key} className="border-b">
+                                <Table.Row id={key} key={key} className="border-b">
                                     <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.cita.mascota?.nombre || ""}</Table.Cell>
                                     <Table.Cell className=" text-slate-600">{new Date(data.cita.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
@@ -222,10 +223,10 @@ function TratamientosPage(){
                                     <Table.Cell>{new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(data.costo)}</Table.Cell>
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
-                                            <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
+                                            <Button isIconOnly aria-label="Editar Tratamiento" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Tratamiento" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
