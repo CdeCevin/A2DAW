@@ -7,6 +7,7 @@ import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs } from
 import { SquarePen, Trash2 } from "lucide-react";
 import  DuenosPageModal from "./DuenosPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useErrorHandler } from "../../api/errorHandler";
 
 function DuenosPage(){
     const navigate = useNavigate();
@@ -16,6 +17,8 @@ function DuenosPage(){
     const [busqueda, setBusqueda] = useState("");
     const [datos, setDatos] = useState([]);
     const [tabActivo, setTabActivo] = useState("all");
+    const { handleError } = useErrorHandler();
+
 
     const handleAbrirCrear = () => {
         setDuenoSeleccionado(null); // Null para crear
@@ -24,27 +27,21 @@ function DuenosPage(){
 
     const handleAbrirEditar = (dueno) => {
         setDuenoSeleccionado(dueno); // Datos de la fila a editar
-        console.log(dueno)
         setIsModalOpen(true);
     };
 
     const handleGuardarDueno = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
             const payloadLimpio = {
             ...datosFormulario
         };
-
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
 
         try {
             if (duenoSeleccionado?.id) {
                 // MODO EDITAR
                 const resp = await editDuenosApi(duenoSeleccionado.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearDuenosApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El dueño se guardó correctamente.", "success");
@@ -54,8 +51,8 @@ function DuenosPage(){
                 setDatos(Array.isArray(duenosActualizados) ? duenosActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleGuardarTrat:", error);
-                showAlert("Error", "No se pudo guardar el dueño.", "danger");
+                handleError(error, "No se pudo guardar el dueño.");
+
             }
         };
 
@@ -63,7 +60,6 @@ function DuenosPage(){
         try {
             if (id) {
                 const resp = await delDuenosApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El dueño se eliminó correctamente.", "success"); 
@@ -71,8 +67,8 @@ function DuenosPage(){
                 setDatos(Array.isArray(duenosActualizados) ? duenosActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleDelete:", error);
-                showAlert("Error", "No se pudo eliminar el dueño.", "danger");
+                handleError(error, "No se pudo eliminar el dueño.");
+
             }
         };
     
@@ -102,16 +98,13 @@ function DuenosPage(){
     
     useEffect(() => {
         const getDuenosInfo = async () => {
-        console.log('info')
-        const resp = await getDuenosApi()
-        setDatos(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
+            try{
+                const resp = await getDuenosApi()
+                setDatos(resp)
+            } catch(error){
+                handleError(error, "No se pudieron cargar los dueños.");
 
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            }
     };
     getDuenosInfo();
     }, []);
@@ -272,13 +265,20 @@ function DuenosPage(){
                                     
                                     <Table.Cell>{data.telefono}</Table.Cell> 
 
-                                    <Table.Cell><Chip 
-                                            color="success" 
-                                            variant="soft"  
-                                            className="flex justify-center w-16" 
+                                    <Table.Cell>
+                                         <Button 
+                                            variant="light" 
+                                            className="p-0 min-w-0 h-auto hover:bg-transparent"
+                                            onPress={() => navigate("/mascotas", { state: { filtrarPorDueno: data.nombreCompleto } })}
                                         >
-                                                <Chip.Label>{data.mascotas ? data.mascotas.length:"0"}</Chip.Label>
-                                        </Chip>
+                                            <Chip 
+                                                color="success" 
+                                                variant="soft"  
+                                                className="flex justify-center w-16 cursor-pointer hover:scale-105 transition-transform" 
+                                            >
+                                                <Chip.Label>{data.mascotas ? data.mascotas.length : "0"}</Chip.Label>
+                                            </Chip>
+                                        </Button>
                                     </Table.Cell> 
                                       
                                 </Table.Row>

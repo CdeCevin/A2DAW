@@ -5,9 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { Card, Table, EmptyState } from "@heroui/react";
 import { Users, PawPrint, CalendarDays,ClipboardList } from "lucide-react";
 import { dashbdApi } from "../../api/dasbdApi";
-
-
-
+import { useErrorHandler } from "../../api/errorHandler";
 
     const links = [
     {
@@ -48,6 +46,8 @@ export default function DashbdPage() {
     const [roles, setRoles] = useState([]);
     const [userName, setUserName] = useState("");
     const [datos, setDatos] = useState([]);
+    const { handleError } = useErrorHandler();
+
 
     // Leer y decodificar el token al cargar el Navbar
     useEffect(() => {
@@ -70,14 +70,13 @@ export default function DashbdPage() {
 
     useEffect(() => {
         const getDashbdInfo = async () => {
-        console.log('info')
-        const resp = await dashbdApi()
-        setDatos(resp)
-        console.log(resp)
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            try{
+                const resp = await dashbdApi()
+                setDatos(resp)
+            }catch(error){
+                handleError(error, "No se pudo cargar la información.");
+
+            }
     };
     getDashbdInfo();
 

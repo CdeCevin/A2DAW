@@ -24,7 +24,6 @@ export default function UserPageModal({ isOpen, onClose, userActual, onSave }) {
             if (isOpen) {
                 setLoading(false)
         if (userActual) {
-            console.log("user: ", userActual)
             const esAdmin = userActual.roles && userActual.roles.includes("admin");
             const rolUI = esAdmin ? "Veterinario" : "Recepcionista";
             const rolId = esAdmin ? 1 : 2;
@@ -179,7 +178,7 @@ return (
                         </TextField>
                         {formData.roles === "Veterinario" && (
                         <Select 
-                            isRequired 
+                            isRequired={!userActual.especialidad}
                             className="w-full" 
                             placeholder="Seleccionar especialidad..." 
                             selectedKey={formData.especialidad || null} 

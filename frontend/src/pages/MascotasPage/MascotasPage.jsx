@@ -9,6 +9,8 @@ import  MascotasPageModal from "./MascotasPageModal";
 import  MascotasHistorialModal from "./MascotasHistorialModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useErrorHandler } from "../../api/errorHandler";
+
 
 function MascotasPage(){
     const { showAlert } = useGlobalAlert();
@@ -20,6 +22,8 @@ function MascotasPage(){
     const [isModalHMOpen, setIsModalHMOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+    const { handleError } = useErrorHandler();
+
 
     const handleAbrirCrear = () => {
         setMascotaSeleccionada(null); // Null para crear
@@ -28,7 +32,6 @@ function MascotasPage(){
 
     const handleAbrirEditar = (masc) => {
         setMascotaSeleccionada(masc); // Datos de la fila a editar
-        console.log(masc)
         setIsModalOpen(true);
     };
 
@@ -38,22 +41,17 @@ function MascotasPage(){
     };
 
     const handleGuardarMascota = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
             const payloadLimpio = {
             ...datosFormulario
         };
-
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
 
         try {
             if (mascotaSeleccionada?.id) {
                 // MODO EDITAR
                 const resp = await editMascotasApi(mascotaSeleccionada.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearMascotasApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
                 showAlert("¡Éxito!", "La mascota se guardó correctamente.", "success");
@@ -63,27 +61,25 @@ function MascotasPage(){
                 setDatos(Array.isArray(mascotasActualizadas) ? mascotasActualizadas : []);
 
             } catch (error) {
-                console.error("Error en handleGuardarMascota:", error);
-                showAlert("Error", "No se pudo guardar la mascota.", "danger");
+                handleError(error, "No se pudo guardar la mascota.");
+
             }
         };
 
     const getDuenos = async () => {
-            console.log('dueños')
+        try{
             const resp = await getDuenosApi()
             setDuenos(resp)
-            //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-            console.log(resp)
-            if(resp.message){
-                alert(resp.message)
-            }
-            console.log(resp)
-        };
+        } catch (error){
+            handleError(error, "No se pudieron cargar los dueños.");
+  
+        }
+    };
+
     const handleDelete = async (id) => {
         try {
             if (id) {
                 const resp = await delMascotasApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
                 showAlert("¡Éxito!", "La mascota se eliminó correctamente.", "success"); 
@@ -91,8 +87,8 @@ function MascotasPage(){
                 setDatos(Array.isArray(mascotasActualizadas) ? mascotasActualizadas : []);
 
             } catch (error) {
-                console.error("Error en handleDelete:", error);
-                showAlert("Error", "No se pudo eliminar la mascota.", "danger");
+                handleError(error, "No se pudo eliminar la mascota.");
+
             }
         };
     
@@ -132,17 +128,14 @@ function MascotasPage(){
     
     useEffect(() => {
         const getMascotasInfo = async () => {
-        getDuenos()
-        console.log('info')
-        const resp = await getMascotasApi()
-        setDatos(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            try{
+                await getDuenos()
+                const resp = await getMascotasApi()
+                setDatos(resp)
+            } catch(error){
+                handleError(error, "No se pudieron cargar las mascotas.");
+               
+            }
     };
     getMascotasInfo();
     }, []);

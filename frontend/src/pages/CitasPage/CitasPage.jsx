@@ -9,6 +9,7 @@ import { Card, Table, EmptyState, SearchField, Button } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import CitasModal from "./CitasModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useErrorHandler } from "../../api/errorHandler";
 
 
 function CitasPage(){
@@ -20,6 +21,7 @@ function CitasPage(){
     const [veterinarios, setVeterinarios] = useState([]);
     const [mascotas, setMascotas] = useState([]);
     const [datos, setDatos] = useState([]);
+    const { handleError } = useErrorHandler();
 
     const handleAbrirCrear = () => {
         setCitaSeleccionada(null); // Null para crear
@@ -28,59 +30,50 @@ function CitasPage(){
 
     const handleAbrirEditar = (cita) => {
         setCitaSeleccionada(cita); // Datos de la fila a editar
-        console.log(cita)
         setIsModalOpen(true);
     };
 
     const handleGuardarCita = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
-            const payloadLimpio = {
+        const payloadLimpio = {
             ...datosFormulario,
             mascota: { id: parseInt(datosFormulario.mascota.id) },
             veterinario: { id: parseInt(datosFormulario.veterinario.id) }
         };
 
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
-
         try {
             if (citaSeleccionada?.id) {
                 // MODO EDITAR
                 const resp = await editCitasApi(citaSeleccionada.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearCitasApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
-                showAlert("¡Éxito!", "La cita se guardó correctamente.", "success");
-                setIsModalOpen(false); 
-                
-                const citasActualizadas = await getCitasApi();
-                setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
+            showAlert("¡Éxito!", "La cita se guardó correctamente.", "success");
+            setIsModalOpen(false); 
+            
+            const citasActualizadas = await getCitasApi();
+            setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
 
-            } catch (error) {
-                console.error("Error en handleGuardarCita:", error);
-                showAlert("Error", "No se pudo guardar la cita.", "danger");
-            }
-        };
+        } catch (error) {
+            handleError(error, "No se pudo guardar la cita.");
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             if (id) {
                 const resp = await delCitasApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
-                showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success"); 
-                const citasActualizadas = await getCitasApi();
-                setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
+            showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success"); 
+            const citasActualizadas = await getCitasApi();
+            setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
 
-            } catch (error) {
-                console.error("Error en handleDelete:", error);
-                showAlert("Error", "No se pudo eliminar la cita.", "danger");
-            }
-        };
+        } catch (error) {
+            handleError(error, "No se pudo eliminar la cita.");
+        }
+    };
     
     // Información del usuario
     const [roles, setRoles] = useState([]);
@@ -108,27 +101,21 @@ function CitasPage(){
     
     
     const getVeterinario = async () => {
-        console.log('usuarios')
-        const resp = await getVetsApi()
-        setVeterinarios(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-        if(resp.message){
-            alert(resp.message)
+        try {
+            const resp = await getVetsApi();
+            setVeterinarios(resp);
+        } catch (error) {
+            handleError(error, "No se pudieron cargar los veterinarios.");
         }
-        console.log(resp)
     };
     
     const getMascotas = async () => {
-        console.log('mascotas')
-        const resp = await getMascotasApi()
-        setMascotas(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-        if(resp.message){
-            alert(resp.message)
+        try {
+            const resp = await getMascotasApi();
+            setMascotas(resp);
+        } catch (error) {
+            handleError(error, "No se pudieron cargar las mascotas.");
         }
-        console.log(resp)
     };
 
     
@@ -136,19 +123,17 @@ function CitasPage(){
     
     useEffect(() => {
         const getCitasInfo = async () => {
-        getVeterinario()
-        getMascotas()
-        console.log('info')
-        const resp = await getCitasApi()
-        setDatos(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
-    };
-    getCitasInfo();
+            try {
+                await getVeterinario();
+                await getMascotas();
+                const resp = await getCitasApi();
+                setDatos(resp);
+            } catch (error) {
+                handleError(error, "No se pudieron cargar las citas.");
+            }
+        };
+        
+        getCitasInfo();
     }, []);
 
     const listaAFiltrar = Array.isArray(datos) ? datos : (datos?.citasProximas || []);

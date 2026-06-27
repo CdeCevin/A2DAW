@@ -7,6 +7,7 @@ import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs } from
 import { SquarePen, Trash2 } from "lucide-react";
 import  UserPageModal from "./UserPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useErrorHandler } from "../../api/errorHandler";
 
 function UserPage(){
     const navigate = useNavigate();
@@ -16,6 +17,8 @@ function UserPage(){
     const [busqueda, setBusqueda] = useState("");
     const [datos, setDatos] = useState([]);
     const [tabActivo, setTabActivo] = useState("all");
+    const { handleError } = useErrorHandler();
+
 
     const handleAbrirCrear = () => {
         setUserSeleccionado(null); // Null para crear
@@ -24,27 +27,22 @@ function UserPage(){
 
     const handleAbrirEditar = (user) => {
         setUserSeleccionado(user); // Datos de la fila a editar
-        console.log(user)
         setIsModalOpen(true);
     };
 
     const handleGuardarUser = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
             const payloadLimpio = {
             ...datosFormulario
         };
 
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
 
         try {
             if (userSeleccionado?.id) {
                 // MODO EDITAR
                 const resp = await editUsersApi(userSeleccionado.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearUsersApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El usuario se guardó correctamente.", "success");
@@ -54,8 +52,7 @@ function UserPage(){
                 setDatos(Array.isArray(usersActualizados) ? usersActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleGuardarTrat:", error);
-                showAlert("Error", "No se pudo guardar el usuario.", "danger");
+                handleError(error, "No se pudo guardar el usuario.");
             }
         };
 
@@ -63,7 +60,6 @@ function UserPage(){
         try {
             if (id) {
                 const resp = await delUsersApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El usuario se eliminó correctamente.", "success"); 
@@ -71,8 +67,7 @@ function UserPage(){
                 setDatos(Array.isArray(usersActualizados) ? usersActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleDelete:", error);
-                showAlert("Error", "No se pudo eliminar el usuario.", "danger");
+                handleError(error, "No se pudo eliminar el usuario.");
             }
         };
     
@@ -104,17 +99,15 @@ function UserPage(){
     
     useEffect(() => {
         const getUsersInfo = async () => {
-        console.log('info')
-        const resp = await getUsersApi()
-        setDatos(resp)
-        setTabActivo("all")
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
+            try{
+            const resp = await getUsersApi()
+            setDatos(resp)
+            setTabActivo("all")
+            }
+            catch(error){
+                handleError(error, "No se pudieron cargar los usuarios.");
 
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            }
     };
     getUsersInfo();
     }, []);

@@ -9,6 +9,8 @@ import { Card, Table, EmptyState, SearchField, Button } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import TratamientosModal from "./TratamientosModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useErrorHandler } from "../../api/errorHandler";
+
 
 function TratamientosPage(){
     const navigate = useNavigate();
@@ -18,6 +20,8 @@ function TratamientosPage(){
     const [busqueda, setBusqueda] = useState("");
     const [citas, setCitas] = useState([]);
     const [datos, setDatos] = useState([]);
+    const { handleError } = useErrorHandler();
+
 
     const handleAbrirCrear = () => {
         setTratSeleccionado(null); // Null para crear
@@ -26,27 +30,21 @@ function TratamientosPage(){
 
     const handleAbrirEditar = (trat) => {
         setTratSeleccionado(trat); // Datos de la fila a editar
-        console.log(trat)
         setIsModalOpen(true);
     };
 
     const handleGuardarTrat = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
-            const payloadLimpio = {
+        const payloadLimpio = {
             ...datosFormulario
         };
-
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
 
         try {
             if (tratSeleccionado?.id) {
                 // MODO EDITAR
                 const resp = await editTratamientoApi(tratSeleccionado.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearTratamientoApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El tratamiento se guardó correctamente.", "success");
@@ -56,8 +54,8 @@ function TratamientosPage(){
                 setDatos(Array.isArray(tratActualizados) ? tratActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleGuardarTrat:", error);
-                showAlert("Error", "No se pudo guardar el tratamiento.", "danger");
+                handleError(error, "No se pudo guardar el tratamiento.");
+
             }
         };
 
@@ -65,7 +63,6 @@ function TratamientosPage(){
         try {
             if (id) {
                 const resp = await delTratamientoApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El tratamiento se eliminó correctamente.", "success"); 
@@ -104,31 +101,23 @@ function TratamientosPage(){
     
     
     const getCitas = async () => {
-    
-        const resp = await getCitasApi()
-        setCitas(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        
-        if(resp.message){
-            alert(resp.message)
+        try{
+            const resp = await getCitasApi()
+            setCitas(resp)
+        }catch(error){
+            handleError(error, "No se pudieron cargar las citas.");
         }
-        console.log(resp)
     };    
     
     useEffect(() => {
         const getTratamientosInfo = async () => {
-        getCitas()
-        console.log('info')
-        const resp = await getTratamientoApi()
-        setDatos(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-        console.log("citas")
-        console.log(citas)
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            try{
+                await getCitas();
+                const resp = await getTratamientoApi()
+                setDatos(resp)
+            } catch(error) {
+                handleError(error, "No se pudieron cargar los tratamientos.");
+            }
     };
     getTratamientosInfo();
     }, []);
