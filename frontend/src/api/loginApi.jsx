@@ -7,12 +7,16 @@ export async function loginApi(payload){
                 "Content-Type":"application/json"
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.json();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ha ocurrido un error de servidor, vuelva a intentarlo más tarde.";
+        throw error;
     }
 }
