@@ -25,7 +25,7 @@ public class MascotaDtoOut {
     private String raza;
     private LocalDate fechaNacimiento;
     private DuenioResumenDto duenio;
-    private List<CitaResumen> citas;
+    private List<CitaResumen> historialMedico;
 
     public static MascotaDtoOut fromEntity(Mascota m) {
         if (m == null) return null;
