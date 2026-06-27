@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { loginApi } from "../../api";
+import { loginApi } from "../../api/loginApi";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../store/auth-context";
 import {Spinner, Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
