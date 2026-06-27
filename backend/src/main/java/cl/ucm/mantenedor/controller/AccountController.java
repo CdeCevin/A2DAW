@@ -35,7 +35,7 @@ public class AccountController {
         }catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorInfo(404, e.getMessage()));
         }catch (org.springframework.security.core.AuthenticationException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorInfo(401, "Correo o contraseña incorrecta"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorInfo(401, "Correo: o contraseña incorrecta"));
         }
     }
 

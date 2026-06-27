@@ -2,6 +2,7 @@ package cl.ucm.mantenedor.dto.out;
 
 import cl.ucm.mantenedor.entities.Mascota;
 import cl.ucm.mantenedor.entities.Cita;
+import cl.ucm.mantenedor.entities.Tratamiento;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,17 +74,47 @@ public class MascotaDtoOut {
         private String motivo;
         private String diagnostico;
         private Boolean esUltima;
+        private List<TratamientoResumen> tratamientos;
         private VeterinarioResumenDto veterinario;
 
         public static CitaResumen fromEntity(Cita c) {
             if (c == null) return null;
+
+            List<TratamientoResumen> tDto = new ArrayList<>();
+            if (c.getTratamientos() != null) {
+                tDto = c.getTratamientos().stream()
+                    .filter(t -> t.getActivo() == null || t.getActivo())
+                    .map(TratamientoResumen::fromEntity)
+                    .collect(Collectors.toList());
+            }
+
             return new CitaResumen(
                 c.getId(),
                 c.getFecha(),
                 c.getMotivo(),
                 c.getDiagnostico(),
                 false,
+                tDto,
                 VeterinarioResumenDto.fromEntity(c.getVeterinario())
+            );
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TratamientoResumen {
+        private Integer id;
+        private String descripcion;
+        private Double costo;
+
+        public static TratamientoResumen fromEntity(Tratamiento t) {
+            if (t == null) return null;
+            return new TratamientoResumen(
+                t.getId(),
+                t.getDescripcion(),
+                t.getCosto()
             );
         }
     }
