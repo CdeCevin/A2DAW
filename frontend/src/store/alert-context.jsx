@@ -54,7 +54,7 @@ export const AlertProvider = ({ children }) => {
                                     variant={alertConfig.status === "danger" ? "danger" : "primary"}
                                     onPress={closeAlert}
                                 >
-                                    Aceptar
+                                    <span>Aceptar</span>
                                 </Button>
                             </AlertDialog.Footer>
                             

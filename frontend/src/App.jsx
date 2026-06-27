@@ -10,6 +10,7 @@ import MascotasPage from './pages/MascotasPage/MascotasPage'
 import UserPage from './pages/UserPage/UserPage'
 import TratamientosPage from './pages/TratamientosPage/TratamientosPage'
 import LoginPage from './pages/LoginPage/LoginPage'
+import NotFoundPage from './pages/ErroresPage/NotFoundPage'
 
 const route = createBrowserRouter([
   {path:'/', element:<LoginPage />},
@@ -20,6 +21,7 @@ const route = createBrowserRouter([
   {path:'/mascotas', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN","ROLE_USER"]}><MascotasPage/></ProtectedRoute>},
   {path:'/usuarios', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><UserPage/></ProtectedRoute>},
   {path:'/tratamientos', element:<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><TratamientosPage/></ProtectedRoute>},
+  {path:'/*', element:<NotFoundPage/>},
   {path:'/no-autorizado', element:<h3>No tienes permisos para acceder a esta página</h3>}
 
 ])

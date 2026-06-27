@@ -8,6 +8,9 @@ import { SquarePen, Trash2, PawPrint } from "lucide-react";
 import  MascotasPageModal from "./MascotasPageModal";
 import  MascotasHistorialModal from "./MascotasHistorialModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useErrorHandler } from "../../api/errorHandler";
+
 
 function MascotasPage(){
     const { showAlert } = useGlobalAlert();
@@ -17,6 +20,10 @@ function MascotasPage(){
     const [datos, setDatos] = useState([]);
     const [duenos, setDuenos] = useState([]);
     const [isModalHMOpen, setIsModalHMOpen] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { handleError } = useErrorHandler();
+
 
     const handleAbrirCrear = () => {
         setMascotaSeleccionada(null); // Null para crear
@@ -25,7 +32,6 @@ function MascotasPage(){
 
     const handleAbrirEditar = (masc) => {
         setMascotaSeleccionada(masc); // Datos de la fila a editar
-        console.log(masc)
         setIsModalOpen(true);
     };
 
@@ -35,22 +41,17 @@ function MascotasPage(){
     };
 
     const handleGuardarMascota = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
             const payloadLimpio = {
             ...datosFormulario
         };
-
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
 
         try {
             if (mascotaSeleccionada?.id) {
                 // MODO EDITAR
                 const resp = await editMascotasApi(mascotaSeleccionada.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearMascotasApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
                 showAlert("¡Éxito!", "La mascota se guardó correctamente.", "success");
@@ -60,27 +61,25 @@ function MascotasPage(){
                 setDatos(Array.isArray(mascotasActualizadas) ? mascotasActualizadas : []);
 
             } catch (error) {
-                console.error("Error en handleGuardarMascota:", error);
-                showAlert("Error", "No se pudo guardar la mascota.", "danger");
+                handleError(error, "No se pudo guardar la mascota.");
+
             }
         };
 
     const getDuenos = async () => {
-            console.log('dueños')
+        try{
             const resp = await getDuenosApi()
             setDuenos(resp)
-            //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-            console.log(resp)
-            if(resp.message){
-                alert(resp.message)
-            }
-            console.log(resp)
-        };
+        } catch (error){
+            handleError(error, "No se pudieron cargar los dueños.");
+  
+        }
+    };
+
     const handleDelete = async (id) => {
         try {
             if (id) {
                 const resp = await delMascotasApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
                 showAlert("¡Éxito!", "La mascota se eliminó correctamente.", "success"); 
@@ -88,8 +87,8 @@ function MascotasPage(){
                 setDatos(Array.isArray(mascotasActualizadas) ? mascotasActualizadas : []);
 
             } catch (error) {
-                console.error("Error en handleDelete:", error);
-                showAlert("Error", "No se pudo eliminar la mascota.", "danger");
+                handleError(error, "No se pudo eliminar la mascota.");
+
             }
         };
     
@@ -115,21 +114,28 @@ function MascotasPage(){
             }
         }
     }, []);
+
+    useEffect(() => {
+        // Si existe un estado en la ruta trae la propiedad 'filtrarPorDueno'
+        if (location.state?.filtrarPorDueno) {
+            setBusqueda(location.state.filtrarPorDueno);
+            //Limpiar estado de la ruta para quitarlo de futuras navegaciones
+            
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location, navigate]);
   
     
     useEffect(() => {
         const getMascotasInfo = async () => {
-        getDuenos()
-        console.log('info')
-        const resp = await getMascotasApi()
-        setDatos(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            try{
+                await getDuenos()
+                const resp = await getMascotasApi()
+                setDatos(resp)
+            } catch(error){
+                handleError(error, "No se pudieron cargar las mascotas.");
+               
+            }
     };
     getMascotasInfo();
     }, []);
@@ -192,8 +198,9 @@ function MascotasPage(){
                     </SearchField.Group>
                 </SearchField>
             </div>
-            
+             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:justify-evenly max-w-screen mt-4 mb-4">
+            {mascotasFiltradas.length>0 ? <>    
                 {mascotasFiltradas.map((mascota, key) =>( 
                     
                     <Card key={key} className="w-full max-w-md bg-white border">
@@ -205,7 +212,7 @@ function MascotasPage(){
                                 <div className="flex flex-col">
                                     <span className="font-bold text-lg">{mascota.nombre}</span>
                                     
-                                    <span className=" text-sm lg:text-md text-gray-600" >{mascota.especie} - {mascota.raza}</span>
+                                    <span className=" text-sm lg:text-md text-gray-600" >{mascota.especie} • {mascota.raza}</span>
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
@@ -241,11 +248,15 @@ function MascotasPage(){
                             </div>
                         </Card.Content>
                     </Card>
-                ))}
+                ))} </> : 
+                <div className="flex ">
+                <span className="text-sm text-gray-500"> No se encontraron resultados.</span>
+                </div>
+                }
             </div>
                 
             </div>
-            {mascotaSeleccionada && (
+            
             <MascotasPageModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
@@ -253,7 +264,7 @@ function MascotasPage(){
                 onSave={handleGuardarMascota}
                 duenos={duenos}
                
-            />)}
+            />
             {mascotaSeleccionada && (
             <MascotasHistorialModal 
                 isOpen={isModalHMOpen} 

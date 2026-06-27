@@ -8,13 +8,17 @@ export async function getMascotasApi(){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.json();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -28,13 +32,17 @@ export async function delMascotasApi(id){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -49,13 +57,17 @@ export async function editMascotasApi(id,payload){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -69,13 +81,17 @@ export async function buscarMascotasApi(id){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.json();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -90,13 +106,17 @@ export async function crearMascotasApi(payload){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 

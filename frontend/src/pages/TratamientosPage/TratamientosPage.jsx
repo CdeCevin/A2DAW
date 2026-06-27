@@ -9,6 +9,8 @@ import { Card, Table, EmptyState, SearchField, Button } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import TratamientosModal from "./TratamientosModal";
 import { useGlobalAlert } from "../../store/alert-context";
+import { useErrorHandler } from "../../api/errorHandler";
+
 
 function TratamientosPage(){
     const navigate = useNavigate();
@@ -18,6 +20,8 @@ function TratamientosPage(){
     const [busqueda, setBusqueda] = useState("");
     const [citas, setCitas] = useState([]);
     const [datos, setDatos] = useState([]);
+    const { handleError } = useErrorHandler();
+
 
     const handleAbrirCrear = () => {
         setTratSeleccionado(null); // Null para crear
@@ -26,27 +30,21 @@ function TratamientosPage(){
 
     const handleAbrirEditar = (trat) => {
         setTratSeleccionado(trat); // Datos de la fila a editar
-        console.log(trat)
         setIsModalOpen(true);
     };
 
     const handleGuardarTrat = async (datosFormulario) => {
-        console.log("Datos a guardar: ", datosFormulario);
-            const payloadLimpio = {
+        const payloadLimpio = {
             ...datosFormulario
         };
-
-        console.log("Paquete limpio enviado al backend: ", payloadLimpio);
 
         try {
             if (tratSeleccionado?.id) {
                 // MODO EDITAR
                 const resp = await editTratamientoApi(tratSeleccionado.id, payloadLimpio);
-                console.log("Respuesta Edición: ", resp);
             } else {
                 // MODO CREAR
                 const resp = await crearTratamientoApi(payloadLimpio);
-                console.log("Respuesta Creación: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El tratamiento se guardó correctamente.", "success");
@@ -56,8 +54,8 @@ function TratamientosPage(){
                 setDatos(Array.isArray(tratActualizados) ? tratActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleGuardarTrat:", error);
-                showAlert("Error", "No se pudo guardar el tratamiento.", "danger");
+                handleError(error, "No se pudo guardar el tratamiento.");
+
             }
         };
 
@@ -65,7 +63,6 @@ function TratamientosPage(){
         try {
             if (id) {
                 const resp = await delTratamientoApi(id);
-                console.log("Respuesta: ", resp);
             }
                 
                 showAlert("¡Éxito!", "El tratamiento se eliminó correctamente.", "success"); 
@@ -104,31 +101,23 @@ function TratamientosPage(){
     
     
     const getCitas = async () => {
-    
-        const resp = await getCitasApi()
-        setCitas(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        
-        if(resp.message){
-            alert(resp.message)
+        try{
+            const resp = await getCitasApi()
+            setCitas(resp)
+        }catch(error){
+            handleError(error, "No se pudieron cargar las citas.");
         }
-        console.log(resp)
     };    
     
     useEffect(() => {
         const getTratamientosInfo = async () => {
-        getCitas()
-        console.log('info')
-        const resp = await getTratamientoApi()
-        setDatos(resp)
-        //setDatos(prevItems => [...resp, ...resp, ...prevItems]); //prueba para datos multiples
-        console.log(resp)
-        console.log("citas")
-        console.log(citas)
-        if(resp.message){
-            alert(resp.message)
-        }
-        console.log(resp)
+            try{
+                await getCitas();
+                const resp = await getTratamientoApi()
+                setDatos(resp)
+            } catch(error) {
+                handleError(error, "No se pudieron cargar los tratamientos.");
+            }
     };
     getTratamientosInfo();
     }, []);
@@ -162,7 +151,7 @@ function TratamientosPage(){
                 <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
                     <span className="font-montserrat text-xl lg:text-2xl">Tratamientos</span>
-                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} - <br className="lg:hidden"/> Costo: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
+                    <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Tratamientos: {datos.length} • <br className="lg:hidden"/> Valor Total: {new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(costoTotal)} </span>
                 </div>
                 <Button onPress={handleAbrirCrear} className="rounded-md bg-accent-aqua-vg">+ Añadir</Button>
                 </div>
@@ -170,6 +159,7 @@ function TratamientosPage(){
 
             <div>
             <SearchField 
+                aria-label="Buscar Tratamiento"
                 name="search" 
                 className="mt-5"
                 value={busqueda}
@@ -196,7 +186,7 @@ function TratamientosPage(){
                             <Table.Column >Cita</Table.Column>
                             <Table.Column>Veterinario</Table.Column>
                             <Table.Column>Descripción</Table.Column>
-                            <Table.Column>Costo</Table.Column>
+                            <Table.Column>Valor</Table.Column>
                             <Table.Column>Acciones</Table.Column>
                         </Table.Header>
                         <Table.Body 
@@ -206,7 +196,7 @@ function TratamientosPage(){
                             </EmptyState>
                         )}>
                             {tratFiltrados.map((data, key) =>(
-                                <Table.Row id={key} className="border-b">
+                                <Table.Row id={key} key={key} className="border-b">
                                     <Table.Cell className="font-semibold text-accent-aqua-vg/70">{data.cita.mascota?.nombre || ""}</Table.Cell>
                                     <Table.Cell className=" text-slate-600">{new Date(data.cita.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
@@ -222,10 +212,10 @@ function TratamientosPage(){
                                     <Table.Cell>{new Intl.NumberFormat("es-CL", {style: "currency",currency: "CLP" }).format(data.costo)}</Table.Cell>
                                     <Table.Cell>
                                         <div className="flex items-center gap-1">
-                                            <Button isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
+                                            <Button isIconOnly aria-label="Editar Tratamiento" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Tratamiento" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             

@@ -8,13 +8,17 @@ export async function getCitasApi(){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.json();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -28,13 +32,17 @@ export async function delCitasApi(id){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
-        console.log("==START ERROR==")
+        console.log("==START ERROR==");
         console.log(error);
-        console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        console.log("===END ERROR==");
+        throw error;
     }
 }
 
@@ -49,13 +57,17 @@ export async function editCitasApi(id,payload){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -69,13 +81,17 @@ export async function buscarCitasApi(id){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.json();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -90,13 +106,17 @@ export async function crearCitasApi(payload){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 

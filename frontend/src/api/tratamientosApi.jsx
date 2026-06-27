@@ -8,13 +8,17 @@ export async function getTratamientoApi(){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.json();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -28,13 +32,17 @@ export async function delTratamientoApi(id){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -49,13 +57,17 @@ export async function crearTratamientoApi(payload){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }
 
@@ -70,12 +82,16 @@ export async function editTratamientoApi(id,payload){
                 'Authorization': `Bearer ${token}`
             }
         });
+        if (!res.ok) {
+            const errorMsg = await res.text(); 
+            throw new Error(errorMsg || `Error en servidor: ${res.status}`);
+        }
         const data = await res.text();
         return data;
     }catch(error){
         console.log("==START ERROR==")
         console.log(error);
         console.log("===END ERROR==")
-        return "Ocurrió un error de servidor";
+        throw error;
     }
 }

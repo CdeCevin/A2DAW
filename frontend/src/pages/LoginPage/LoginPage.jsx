@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { loginApi } from "../../api";
+import { loginApi } from "../../api/loginApi";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../store/auth-context";
 import {Spinner, Button, Card, Form, Input, Label, Link, TextField, FieldError} from "@heroui/react";
@@ -13,26 +13,28 @@ function LoginPage(){
     const { showAlert } = useGlobalAlert();
     const [isLoading, setLoading] = useState(false);
 
-    const loginAction = async(e) => {
+    const loginAction = async (e) => {
         e.preventDefault();
-        setLoading(true)
-        console.log('login')
-        const resp = await loginApi({correo:correo, password:password})
-        console.log(resp)
-        if(resp?.token){
-            await saveToken(resp.token)
-            navigate('/menu', {replace:true})
-        }else if(resp.message){
-            console.log(resp)
-            setLoading(false)
-            showAlert("Error",resp.message, "danger");
+        setLoading(true);
+        console.log('login');
+
+        try {
+            const resp = await loginApi({ correo: correo, password: password });
+            console.log("Respuesta del servidor:", resp);
+
+            if (resp?.token) {
+                await saveToken(resp.token);
+                navigate('/menu', { replace: true });
+            } else {
+                showAlert("Error", "Ocurrió un error inesperado", "danger");
+            }
+        } catch (error) {
+            console.error("Error capturado en loginAction:", error);
+            showAlert("Error", "Credenciales incorrectas o el usuario no existe", "danger");
+        } finally {
+            setLoading(false);
         }
-        else{
-            setLoading(false)
-            showAlert("Error","Ocurrió un error inesperado", "danger");
-        }
-        console.log(resp)
-    }
+    };
 
 
     return (
