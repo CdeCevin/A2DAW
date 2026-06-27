@@ -25,33 +25,9 @@ public class MascotaDtoOut {
     private String raza;
     private LocalDate fechaNacimiento;
     private DuenioResumenDto duenio;
-    private List<CitaResumen> historialMedico;
 
     public static MascotaDtoOut fromEntity(Mascota m) {
         if (m == null) return null;
-
-        List<CitaResumen> citasDto = new ArrayList<>();
-        if (m.getCitas() != null) {
-            List<Cita> activeCitas = m.getCitas().stream()
-                    .filter(c -> c.getActivo() == null || c.getActivo())
-                    .collect(Collectors.toList());
-
-            if (!activeCitas.isEmpty()) {
-                Cita latestCita = activeCitas.stream()
-                        .max(java.util.Comparator.comparing(Cita::getFecha))
-                        .orElse(null);
-
-                for (Cita c : activeCitas) {
-                    CitaResumen cr = CitaResumen.fromEntity(c);
-                    if (latestCita != null && c.getId().equals(latestCita.getId())) {
-                        cr.setEsUltima(true);
-                    } else {
-                        cr.setEsUltima(false);
-                    }
-                    citasDto.add(cr);
-                }
-            }
-        }
 
         return new MascotaDtoOut(
             m.getId(),
@@ -59,8 +35,7 @@ public class MascotaDtoOut {
             m.getEspecie(),
             m.getRaza(),
             m.getFechaNacimiento(),
-            DuenioResumenDto.fromEntity(m.getDuenio()),
-            citasDto
+            DuenioResumenDto.fromEntity(m.getDuenio())
         );
     }
 
