@@ -42,6 +42,7 @@ public class HistorialMedicoController {
                                 }
                                 citasDto.add(cr);
                             }
+                            citasDto.sort((a, b) -> b.getFecha().compareTo(a.getFecha()));
                         }
                     }
                     return ResponseEntity.ok(citasDto);
