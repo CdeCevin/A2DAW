@@ -30,7 +30,8 @@ public class CitaController {
 
     @GetMapping
     public List<CitaDtoOut> getAll() {
-        return repository.findAll().stream()
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        return repository.findByFechaGreaterThanEqualOrderByFechaAsc(now).stream()
                 .map(CitaDtoOut::fromEntity)
                 .collect(Collectors.toList());
     }

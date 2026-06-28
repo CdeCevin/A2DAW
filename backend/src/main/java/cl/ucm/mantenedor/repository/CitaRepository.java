@@ -12,4 +12,5 @@ import java.util.List;
 public interface CitaRepository extends JpaRepository<Cita, Integer> {
     List<Cita> findByOrderByFechaDesc(Pageable pageable);
     List<Cita> findByFechaAfterOrderByFechaAsc(LocalDateTime fecha, Pageable pageable);
+    List<Cita> findByFechaGreaterThanEqualOrderByFechaAsc(LocalDateTime fecha);
 }
