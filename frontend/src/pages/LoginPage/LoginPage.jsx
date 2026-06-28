@@ -16,11 +16,9 @@ function LoginPage(){
     const loginAction = async (e) => {
         e.preventDefault();
         setLoading(true);
-        console.log('login');
 
         try {
             const resp = await loginApi({ correo: correo, password: password });
-            console.log("Respuesta del servidor:", resp);
 
             if (resp?.token) {
                 await saveToken(resp.token);

@@ -22,8 +22,6 @@ export default function MascotasPageModal({ isOpen, onClose, mascotaActual, onSa
             if (isOpen) {
                 setLoading(false)
         if (mascotaActual) {
-            console.log("mascota: ", mascotaActual)
-            // Si viene una mascota se llena el formulario
             setFormData({
                 nombre: mascotaActual.nombre || "",
                 especie: mascotaActual.especie || "",

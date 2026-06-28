@@ -11,7 +11,6 @@ function CategoriaPage(){
 useEffect(()=>{
     async function getCategories(){
         const data = await findAllCategoryApi(token)
-        console.log(data)
         setCategories(data)
     }
     getCategories()

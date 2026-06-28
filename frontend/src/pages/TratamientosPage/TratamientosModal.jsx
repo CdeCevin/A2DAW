@@ -16,7 +16,6 @@ export default function TratamientosModal({ isOpen, onClose, tratActual, onSave,
             if (isOpen) {
                 setLoading(false)
         if (tratActual) {
-            console.log("tratamiento: ", tratActual)
             // Si viene un tratamiento se llena el formulario
             setFormData({
                 cita: { id: tratActual.cita?.id ? String(tratActual.cita.id) : "" },

@@ -129,8 +129,8 @@ function TratamientosPage(){
 
         const termino = busqueda.toLowerCase();
         
-        const nombreMascota = trat.mascota?.nombre?.toLowerCase() || "";
-        const nombreVet = trat.veterinario?.name?.toLowerCase() || "";
+        const nombreMascota = trat.cita.mascota?.nombre?.toLowerCase() || "";
+        const nombreVet = trat.cita.veterinario?.name?.toLowerCase() || "";
         const descripcionTrat = trat.descripcion?.toLowerCase() || "";
 
         return nombreMascota.includes(termino) || 
