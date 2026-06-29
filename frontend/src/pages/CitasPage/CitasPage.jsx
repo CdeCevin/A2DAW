@@ -10,6 +10,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import CitasModal from "./CitasModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/eliminarModal";
 
 
 function CitasPage(){
@@ -23,6 +24,8 @@ function CitasPage(){
     const [datos, setDatos] = useState([]);
     const { handleError } = useErrorHandler();
     const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleAbrirCrear = () => {
         setCitaSeleccionada(null); // Null para crear
@@ -61,18 +64,22 @@ function CitasPage(){
         }
     };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if (!itemAEliminar) return; 
+        setIsDeleting(true); 
+
         try {
-            if (id) {
-                const resp = await delCitasApi(id);
-            }
-                
+            await delCitasApi(itemAEliminar);
+            
             showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success"); 
             const citasActualizadas = await getCitasApi();
             setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
 
         } catch (error) {
             handleError(error, "No se pudo eliminar la cita.");
+        } finally {
+            setIsDeleting(false);
+            setItemAEliminar(null); 
         }
     };
     
@@ -219,7 +226,7 @@ function CitasPage(){
                                             <Button isIconOnly aria-label="Editar Cita" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly aria-label="Eliminar Cita" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Cita" size="sm" variant="danger-soft" onPress={() => setItemAEliminar(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
@@ -291,6 +298,13 @@ function CitasPage(){
                 veterinarios={veterinarios}
                 mascotas={mascotas}
                 isAdmin={isAdmin}
+            />
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
             />
             </>
         );

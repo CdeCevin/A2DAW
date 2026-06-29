@@ -65,7 +65,6 @@ function TratamientosPage(){
             if (id) {
                 const resp = await delTratamientoApi(id);
             }
-                
                 showAlert("¡Éxito!", "El tratamiento se eliminó correctamente.", "success"); 
                 const tratActualizados = await getTratamientoApi();
                 setDatos(Array.isArray(tratActualizados) ? tratActualizados : []);
