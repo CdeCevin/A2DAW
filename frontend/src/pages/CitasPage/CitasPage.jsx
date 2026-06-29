@@ -96,40 +96,23 @@ function CitasPage(){
                 console.error("Error al decodificar token en Navbar:", error);
             }
         }
-    }, []);
+    }, []);    
 
-    
-    
-    const getVeterinario = async () => {
-        try {
-            const resp = await getVetsApi();
-            setVeterinarios(resp);
-        } catch (error) {
-            handleError(error, "No se pudieron cargar los veterinarios.");
-        }
-    };
-    
-    const getMascotas = async () => {
-        try {
-            const resp = await getMascotasApi();
-            setMascotas(resp);
-        } catch (error) {
-            handleError(error, "No se pudieron cargar las mascotas.");
-        }
-    };
-
-    
-    
-    
+    //Mejorado con Primise all para que las llamadas a las apis no recargaran
+    // el useeffect
     useEffect(() => {
         const getCitasInfo = async () => {
             try {
-                await getVeterinario();
-                await getMascotas();
-                const resp = await getCitasApi();
-                setDatos(resp);
+                const [vets, masc, citas] = await Promise.all([
+                    getVetsApi(),
+                    getMascotasApi(),
+                    getCitasApi()
+                ]);
+                setVeterinarios(vets)
+                setMascotas(masc)
+                setDatos(citas)
             } catch (error) {
-                handleError(error, "No se pudieron cargar las citas.");
+                handleError(error, "No se pudo cargar la información de la página.");
             }
         };
         

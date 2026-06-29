@@ -96,27 +96,21 @@ function TratamientosPage(){
                 console.error("Error al decodificar token en Navbar:", error);
             }
         }
-    }, []);
-
+    }, []); 
     
-    
-    const getCitas = async () => {
-        try{
-            const resp = await getCitasApi()
-            setCitas(resp)
-        }catch(error){
-            handleError(error, "No se pudieron cargar las citas.");
-        }
-    };    
-    
+    //Mejorado con Primise all para que las llamadas a las apis no recargaran
+    // el useeffect
     useEffect(() => {
         const getTratamientosInfo = async () => {
             try{
-                await getCitas();
-                const resp = await getTratamientoApi()
-                setDatos(resp)
+                const[citas, trat] = await Promise.all([
+                    getCitasApi(),
+                    getTratamientoApi()
+                ]);
+                setCitas(citas)
+                setDatos(trat)
             } catch(error) {
-                handleError(error, "No se pudieron cargar los tratamientos.");
+                handleError(error, "No se pudieron cargar los datos de la página.");
             }
     };
     getTratamientosInfo();

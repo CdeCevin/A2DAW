@@ -125,16 +125,19 @@ function MascotasPage(){
         }
     }, [location, navigate]);
   
-    
+    //Mejorado con Primise all para que las llamadas a las apis no recargaran
+    // el useeffect
     useEffect(() => {
         const getMascotasInfo = async () => {
             try{
-                await getDuenos()
-                const resp = await getMascotasApi()
-                setDatos(resp)
+                const [duenos, mascotas] = await Promise.all([
+                    getDuenosApi(),
+                    getMascotasApi()
+                ]);
+                setDuenos(duenos)
+                setDatos(mascotas)
             } catch(error){
-                handleError(error, "No se pudieron cargar las mascotas.");
-               
+                handleError(error, "No se pudieron cargar los datos de la página.");
             }
     };
     getMascotasInfo();

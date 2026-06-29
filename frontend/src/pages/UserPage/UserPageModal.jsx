@@ -32,7 +32,6 @@ export default function UserPageModal({ isOpen, onClose, userActual, onSave }) {
                 correo: userActual?.correo || "",
                 name: userActual?.name || "",
                 especialidad: userActual?.especialidad || "",
-                roles: userActual?.roles || "",
                 roles: rolUI,
                 idRol: rolId,
             
@@ -178,7 +177,7 @@ return (
                         </TextField>
                         {formData.roles === "Veterinario" && (
                         <Select 
-                            isRequired={!userActual.especialidad}
+                            isRequired={!userActual?.especialidad}
                             className="w-full" 
                             placeholder="Seleccionar especialidad..." 
                             selectedKey={formData.especialidad || null} 
