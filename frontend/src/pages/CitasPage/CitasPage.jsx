@@ -5,7 +5,7 @@ import { getVetsApi} from "../../api/usersApi";
 import { getMascotasApi} from "../../api/mascotasApi";
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, Table, EmptyState, SearchField, Button } from "@heroui/react";
+import { Card, Table, EmptyState, SearchField, Button, Spinner } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import CitasModal from "./CitasModal";
 import { useGlobalAlert } from "../../store/alert-context";
@@ -22,6 +22,7 @@ function CitasPage(){
     const [mascotas, setMascotas] = useState([]);
     const [datos, setDatos] = useState([]);
     const { handleError } = useErrorHandler();
+    const [isLoading, setIsLoading] = useState(true); 
 
     const handleAbrirCrear = () => {
         setCitaSeleccionada(null); // Null para crear
@@ -102,6 +103,7 @@ function CitasPage(){
     // el useeffect
     useEffect(() => {
         const getCitasInfo = async () => {
+            setIsLoading(true)
             try {
                 const [vets, masc, citas] = await Promise.all([
                     getVetsApi(),
@@ -113,6 +115,8 @@ function CitasPage(){
                 setDatos(citas)
             } catch (error) {
                 handleError(error, "No se pudo cargar la información de la página.");
+            } finally {
+                setIsLoading(false)
             }
         };
         
@@ -186,7 +190,14 @@ function CitasPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
                                 <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {citasFiltradas.map((data, key) =>(
@@ -236,7 +247,14 @@ function CitasPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
                                 <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {citasFiltradas.map((data, key) =>(

@@ -3,7 +3,7 @@ import { getMascotasApi, delMascotasApi, editMascotasApi, buscarMascotasApi, cre
 import { getDuenosApi} from "../../api/duenosApi";
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, SearchField, Button } from "@heroui/react";
+import { Card, SearchField, Button, Spinner } from "@heroui/react";
 import { SquarePen, Trash2, PawPrint } from "lucide-react";
 import  MascotasPageModal from "./MascotasPageModal";
 import  MascotasHistorialModal from "./MascotasHistorialModal";
@@ -23,6 +23,7 @@ function MascotasPage(){
     const location = useLocation();
     const navigate = useNavigate();
     const { handleError } = useErrorHandler();
+    const [isLoading, setIsLoading] = useState(true); 
 
 
     const handleAbrirCrear = () => {
@@ -129,6 +130,7 @@ function MascotasPage(){
     // el useeffect
     useEffect(() => {
         const getMascotasInfo = async () => {
+            setIsLoading(true)
             try{
                 const [duenos, mascotas] = await Promise.all([
                     getDuenosApi(),
@@ -138,6 +140,8 @@ function MascotasPage(){
                 setDatos(mascotas)
             } catch(error){
                 handleError(error, "No se pudieron cargar los datos de la página.");
+            } finally{
+                setIsLoading(false)
             }
     };
     getMascotasInfo();
@@ -252,8 +256,15 @@ function MascotasPage(){
                         </Card.Content>
                     </Card>
                 ))} </> : 
-                <div className="flex ">
-                <span className="text-sm text-gray-500"> No se encontraron resultados.</span>
+                <div className="flex justify-center w-screen">
+                    {isLoading ? (
+                        <div className="flex flex-row items-center gap-1">
+                        <Spinner className="text-muted" size="sm"/>
+                        <span className="text-sm text-muted">Cargando..</span>
+                    </div>
+                    ) : (
+                    <span className="text-sm text-muted">No se encontraron resultados</span>
+                    )}
                 </div>
                 }
             </div>

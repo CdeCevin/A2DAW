@@ -47,7 +47,7 @@ return (
       <Modal.Backdrop>
         <Modal.Container placement="auto">
           <Modal.Dialog className="sm:max-w-md lg:max-w-xl min-h-[50vh]">
-            <Modal.CloseTrigger />
+            <Modal.CloseTrigger className="z-100"/>
             <Modal.Header className='sticky'>
                 <div className="flex flex-col lg:flex-row items-start lg:items-center gap-5 mr-5">
                     
@@ -89,15 +89,15 @@ return (
                     <div className='flex flex-col gap-4  items-center justify-center'>
                             {historial ? historial.map((evento, key) =>(                     
                                 <Card key={key} className={`p-0 w-full bg-white border ${evento.esUltima ? "border-accent-aqua-vg/50" : "border-gray-200"}`}>
-                                    <Card.Header className={`w-full p-3 rounded-t-3xl ${evento.esUltima ? "bg-accent-aqua-vg/20" : "bg-gray-200"}`}>
+                                    <Card.Header className={`w-full p-4 rounded-t-3xl ${evento.esUltima ? "bg-accent-aqua-vg/20" : "bg-gray-200"}`}>
                                         <div className='flex flex-col lg:flex-row items-center justify-between'>
                                             <div className='flex flex-col items-start justify-start gap-1'>
-                                                {new Date(evento.fecha).toLocaleDateString('es-CL', {
+                                                <span className='font-semibold'>{new Date(evento.fecha).toLocaleDateString('es-CL', {
                                                     weekday: 'long',
                                                     year: 'numeric',
                                                     month: 'long',
                                                     day: 'numeric',  
-                                                })}
+                                                })}</span>
                                                 {evento.esUltima && (
                                                 <Chip 
                                                     

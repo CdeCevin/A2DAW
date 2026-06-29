@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getUsersApi, delUsersApi, editUsersApi, buscarUsersApi, crearUsersApi} from "../../api/usersApi";
 import { useState, useEffect, useMemo } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs } from "@heroui/react";
+import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs, Spinner } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import  UserPageModal from "./UserPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
@@ -18,6 +18,7 @@ function UserPage(){
     const [datos, setDatos] = useState([]);
     const [tabActivo, setTabActivo] = useState("all");
     const { handleError } = useErrorHandler();
+    const [isLoading, setIsLoading] = useState(true); 
 
 
     const handleAbrirCrear = () => {
@@ -99,6 +100,7 @@ function UserPage(){
     
     useEffect(() => {
         const getUsersInfo = async () => {
+            setIsLoading(true)
             try{
             const resp = await getUsersApi()
             setDatos(resp)
@@ -106,7 +108,8 @@ function UserPage(){
             }
             catch(error){
                 handleError(error, "No se pudieron cargar los usuarios.");
-
+            } finally {
+                setIsLoading(false)
             }
     };
     getUsersInfo();
@@ -247,7 +250,14 @@ function UserPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                                <span className="text-sm text-muted">No se encontraron resultados.</span>
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
+                                <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {userFiltrados.map((data, key) =>(

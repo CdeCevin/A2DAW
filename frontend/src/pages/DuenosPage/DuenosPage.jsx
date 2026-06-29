@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getDuenosApi, delDuenosApi, editDuenosApi, buscarDuenosApi, crearDuenosApi} from "../../api/duenosApi";
 import { useState, useEffect, useMemo } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs } from "@heroui/react";
+import { Card, Table, EmptyState, SearchField, Button, Chip, Avatar, Tabs, Spinner } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import  DuenosPageModal from "./DuenosPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
@@ -18,7 +18,7 @@ function DuenosPage(){
     const [datos, setDatos] = useState([]);
     const [tabActivo, setTabActivo] = useState("all");
     const { handleError } = useErrorHandler();
-
+    const [isLoading, setIsLoading] = useState(true); 
 
     const handleAbrirCrear = () => {
         setDuenoSeleccionado(null); // Null para crear
@@ -98,12 +98,14 @@ function DuenosPage(){
     
     useEffect(() => {
         const getDuenosInfo = async () => {
+            setIsLoading(true)
             try{
                 const resp = await getDuenosApi()
                 setDatos(resp)
             } catch(error){
                 handleError(error, "No se pudieron cargar los dueños.");
-
+            } finally{
+                setIsLoading(false)
             }
     };
     getDuenosInfo();
@@ -182,7 +184,14 @@ function DuenosPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                                <span className="text-sm text-muted">No se encontraron resultados.</span>
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
+                                <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {duenosFiltrados.map((data, key) =>(
@@ -247,7 +256,14 @@ function DuenosPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                                <span className="text-sm text-muted">No se encontraron resultados.</span>
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
+                                <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {duenosFiltrados.map((data, key) =>(
