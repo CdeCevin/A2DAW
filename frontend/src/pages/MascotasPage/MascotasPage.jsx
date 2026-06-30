@@ -189,8 +189,8 @@ function MascotasPage(){
                 {isUser && (
                     <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
-                        <span className="font-montserrat text-xl lg:text-2xl"> Dueñps</span>
-                        <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Dueños: {datos.length} </span>
+                        <span className="font-montserrat text-xl lg:text-2xl"> Mascotas</span>
+                        <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Mascotas: {datos.length} </span>
                     </div>
                     </div>
                 )}
@@ -201,7 +201,7 @@ function MascotasPage(){
                     className="mt-5"
                     value={busqueda}
                     onChange={(e) => setBusqueda(e?.target?.value ?? e)}
-                    aria-label="Buscador de dueños"
+                    aria-label="Buscador de Mascotas"
                     >
                     <SearchField.Group className="border border-gray-100">
                         <SearchField.SearchIcon />
