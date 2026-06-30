@@ -89,7 +89,7 @@ public class MascotaController {
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return ResponseEntity.ok("Mascota eliminada con éxito");
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

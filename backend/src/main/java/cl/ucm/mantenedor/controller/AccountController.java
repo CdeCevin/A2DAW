@@ -22,7 +22,7 @@ public class AccountController {
     @PostMapping(path = "create")
     public ResponseEntity<?> createAccount(@RequestBody AccountDtoIn in){
         try{
-            return ResponseEntity.ok(service.createAccount(in));
+            return ResponseEntity.status(HttpStatus.CREATED).body(service.createAccount(in));
         }catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorInfo(400, e.getMessage()));
         }catch (org.springframework.dao.DataIntegrityViolationException e){
@@ -90,7 +90,7 @@ public class AccountController {
     public ResponseEntity<?> deleteUsuario(@PathVariable Integer id){
         if (service.existsUsuarioById(id)) {
             service.deleteUsuario(id);
-            return ResponseEntity.ok("Usuario eliminado con éxito");
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

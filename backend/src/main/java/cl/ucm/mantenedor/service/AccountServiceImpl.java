@@ -45,6 +45,16 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AccountDtoOut createAccount(AccountDtoIn in) {
+        if (in.getCorreo() == null || in.getCorreo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El correo electrónico es requerido");
+        }
+        if (in.getPassword() == null || in.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña es requerida");
+        }
+        if (in.getName() == null || in.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre es requerido");
+        }
+
         if(repository.existsByCorreoIncludeInactive(in.getCorreo())){
             throw new IllegalArgumentException("correo ya registrado");
         }
