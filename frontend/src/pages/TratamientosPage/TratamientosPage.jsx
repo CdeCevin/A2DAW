@@ -5,11 +5,12 @@ import { getCitasApi} from "../../api/citasApi";
 
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, Table, EmptyState, SearchField, Button } from "@heroui/react";
+import { Card, Table, EmptyState, SearchField, Button, Spinner } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import TratamientosModal from "./TratamientosModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 
 function TratamientosPage(){
@@ -21,6 +22,9 @@ function TratamientosPage(){
     const [citas, setCitas] = useState([]);
     const [datos, setDatos] = useState([]);
     const { handleError } = useErrorHandler();
+    const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
 
     const handleAbrirCrear = () => {
@@ -59,19 +63,20 @@ function TratamientosPage(){
             }
         };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if(!itemAEliminar) return
+        setIsDeleting(true)
         try {
-            if (id) {
-                const resp = await delTratamientoApi(id);
-            }
-                
+                await delTratamientoApi(itemAEliminar);
                 showAlert("¡Éxito!", "El tratamiento se eliminó correctamente.", "success"); 
                 const tratActualizados = await getTratamientoApi();
                 setDatos(Array.isArray(tratActualizados) ? tratActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleDelete:", error);
                 showAlert("Error", "No se pudo eliminar el tratamiento.", "danger");
+            } finally {
+                setIsDeleting(false)
+                setItemAEliminar(null)
             }
         };
     
@@ -96,27 +101,24 @@ function TratamientosPage(){
                 console.error("Error al decodificar token en Navbar:", error);
             }
         }
-    }, []);
-
+    }, []); 
     
-    
-    const getCitas = async () => {
-        try{
-            const resp = await getCitasApi()
-            setCitas(resp)
-        }catch(error){
-            handleError(error, "No se pudieron cargar las citas.");
-        }
-    };    
-    
+    //Mejorado con Primise all para que las llamadas a las apis no recargaran
+    // el useeffect
     useEffect(() => {
         const getTratamientosInfo = async () => {
+            setIsLoading(true)
             try{
-                await getCitas();
-                const resp = await getTratamientoApi()
-                setDatos(resp)
+                const[citas, trat] = await Promise.all([
+                    getCitasApi(),
+                    getTratamientoApi()
+                ]);
+                setCitas(citas)
+                setDatos(trat)
             } catch(error) {
-                handleError(error, "No se pudieron cargar los tratamientos.");
+                handleError(error, "No se pudieron cargar los datos de la página.");
+            } finally {
+                setIsLoading(false)
             }
     };
     getTratamientosInfo();
@@ -129,8 +131,8 @@ function TratamientosPage(){
 
         const termino = busqueda.toLowerCase();
         
-        const nombreMascota = trat.mascota?.nombre?.toLowerCase() || "";
-        const nombreVet = trat.veterinario?.name?.toLowerCase() || "";
+        const nombreMascota = trat.cita.mascota?.nombre?.toLowerCase() || "";
+        const nombreVet = trat.cita.veterinario?.name?.toLowerCase() || "";
         const descripcionTrat = trat.descripcion?.toLowerCase() || "";
 
         return nombreMascota.includes(termino) || 
@@ -192,7 +194,14 @@ function TratamientosPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                                <span className="text-sm text-muted">No se encontraron resultados.</span>
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
+                                <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {tratFiltrados.map((data, key) =>(
@@ -215,7 +224,7 @@ function TratamientosPage(){
                                             <Button isIconOnly aria-label="Editar Tratamiento" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly aria-label="Eliminar Tratamiento" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Tratamiento" size="sm" variant="danger-soft" onPress={() => setItemAEliminar(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
@@ -281,6 +290,13 @@ function TratamientosPage(){
                 tratActual={tratSeleccionado}
                 onSave={handleGuardarTrat}
                 citas={citas}
+            />
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
             />
             </>
         );

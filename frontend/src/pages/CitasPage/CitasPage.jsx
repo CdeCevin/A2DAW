@@ -5,11 +5,12 @@ import { getVetsApi} from "../../api/usersApi";
 import { getMascotasApi} from "../../api/mascotasApi";
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, Table, EmptyState, SearchField, Button } from "@heroui/react";
+import { Card, Table, EmptyState, SearchField, Button, Spinner } from "@heroui/react";
 import { SquarePen, Trash2 } from "lucide-react";
 import CitasModal from "./CitasModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 
 function CitasPage(){
@@ -22,6 +23,9 @@ function CitasPage(){
     const [mascotas, setMascotas] = useState([]);
     const [datos, setDatos] = useState([]);
     const { handleError } = useErrorHandler();
+    const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleAbrirCrear = () => {
         setCitaSeleccionada(null); // Null para crear
@@ -60,18 +64,22 @@ function CitasPage(){
         }
     };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if (!itemAEliminar) return
+        setIsDeleting(true)
+
         try {
-            if (id) {
-                const resp = await delCitasApi(id);
-            }
-                
-            showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success"); 
-            const citasActualizadas = await getCitasApi();
-            setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
+            await delCitasApi(itemAEliminar);
+            
+            showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success")
+            const citasActualizadas = await getCitasApi()
+            setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : [])
 
         } catch (error) {
-            handleError(error, "No se pudo eliminar la cita.");
+            handleError(error, "No se pudo eliminar la cita.")
+        } finally {
+            setIsDeleting(false)
+            setItemAEliminar(null)
         }
     };
     
@@ -96,40 +104,26 @@ function CitasPage(){
                 console.error("Error al decodificar token en Navbar:", error);
             }
         }
-    }, []);
+    }, []);    
 
-    
-    
-    const getVeterinario = async () => {
-        try {
-            const resp = await getVetsApi();
-            setVeterinarios(resp);
-        } catch (error) {
-            handleError(error, "No se pudieron cargar los veterinarios.");
-        }
-    };
-    
-    const getMascotas = async () => {
-        try {
-            const resp = await getMascotasApi();
-            setMascotas(resp);
-        } catch (error) {
-            handleError(error, "No se pudieron cargar las mascotas.");
-        }
-    };
-
-    
-    
-    
+    //Mejorado con Primise all para que las llamadas a las apis no recargaran
+    // el useeffect
     useEffect(() => {
         const getCitasInfo = async () => {
+            setIsLoading(true)
             try {
-                await getVeterinario();
-                await getMascotas();
-                const resp = await getCitasApi();
-                setDatos(resp);
+                const [vets, masc, citas] = await Promise.all([
+                    getVetsApi(),
+                    getMascotasApi(),
+                    getCitasApi()
+                ]);
+                setVeterinarios(vets)
+                setMascotas(masc)
+                setDatos(citas)
             } catch (error) {
-                handleError(error, "No se pudieron cargar las citas.");
+                handleError(error, "No se pudo cargar la información de la página.");
+            } finally {
+                setIsLoading(false)
             }
         };
         
@@ -203,7 +197,14 @@ function CitasPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
                                 <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {citasFiltradas.map((data, key) =>(
@@ -225,7 +226,7 @@ function CitasPage(){
                                             <Button isIconOnly aria-label="Editar Cita" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly aria-label="Eliminar Cita" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Cita" size="sm" variant="danger-soft" onPress={() => setItemAEliminar(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
@@ -253,7 +254,14 @@ function CitasPage(){
                         <Table.Body 
                         renderEmptyState={() => (
                             <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                                {isLoading ? (
+                                    <div className="flex flex-row items-center gap-1">
+                                    <Spinner color="current" size="sm"/>
+                                    <span className="text-sm text-muted">Cargando..</span>
+                                </div>
+                                ) : (
                                 <span className="text-sm text-muted">No se encontraron resultados</span>
+                                )}
                             </EmptyState>
                         )}>
                             {citasFiltradas.map((data, key) =>(
@@ -290,6 +298,13 @@ function CitasPage(){
                 veterinarios={veterinarios}
                 mascotas={mascotas}
                 isAdmin={isAdmin}
+            />
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
             />
             </>
         );

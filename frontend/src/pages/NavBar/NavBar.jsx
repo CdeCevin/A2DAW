@@ -51,7 +51,7 @@ export default function Navbar() {
                             <Link to="/menu" className="flex items-center cursor-pointer">
                             <div className='flex flex-col items-center'>
                                 <img 
-                                    src="/img/logo_mientras.jpg"
+                                    src="/img/logo.jpg"
                                     alt="VetGo"
                                     className="h-6 sm:h-8"
                                 />
@@ -77,7 +77,7 @@ export default function Navbar() {
                         <Link to="/menu" className="md:hidden flex items-center cursor-pointer">
                             <div className='flex flex-col items-center'>
                                 <img 
-                                    src="/img/logo_mientras.jpg"
+                                    src="/img/logo.jpg"
                                     alt="VetGo"
                                     className="h-6 sm:h-8"
                                 />

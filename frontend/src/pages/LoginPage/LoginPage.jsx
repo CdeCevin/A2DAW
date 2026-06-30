@@ -16,11 +16,9 @@ function LoginPage(){
     const loginAction = async (e) => {
         e.preventDefault();
         setLoading(true);
-        console.log('login');
 
         try {
             const resp = await loginApi({ correo: correo, password: password });
-            console.log("Respuesta del servidor:", resp);
 
             if (resp?.token) {
                 await saveToken(resp.token);
@@ -41,7 +39,7 @@ function LoginPage(){
         <div className="flex flex-col items-center justify-center w-full min-h-screen py-16 sm:py-20 px-10 sm:px-6 lg:px-8 relative bg-bg-vg">
             <div>
                 <img 
-                    src="/img/logo_mientras.jpg"
+                    src="/img/logo.jpg"
                     alt="VetGo"
                     className="h-8 sm:h-16"
                 />

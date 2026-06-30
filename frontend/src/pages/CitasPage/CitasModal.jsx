@@ -18,7 +18,6 @@ export default function CitasModal({ isOpen, onClose, citaActual, onSave, mascot
             if (isOpen) {
                 setLoading(false)
         if (citaActual) {
-            console.log("cita: ", citaActual)
             // Si viene una cita se llena el formulario
             setFormData({
                 fecha: citaActual.fecha || "",

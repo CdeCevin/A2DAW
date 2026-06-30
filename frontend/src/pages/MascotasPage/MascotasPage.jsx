@@ -3,13 +3,14 @@ import { getMascotasApi, delMascotasApi, editMascotasApi, buscarMascotasApi, cre
 import { getDuenosApi} from "../../api/duenosApi";
 import { useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import { Card, SearchField, Button } from "@heroui/react";
+import { Card, SearchField, Button, Spinner } from "@heroui/react";
 import { SquarePen, Trash2, PawPrint } from "lucide-react";
 import  MascotasPageModal from "./MascotasPageModal";
 import  MascotasHistorialModal from "./MascotasHistorialModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 
 function MascotasPage(){
@@ -23,6 +24,9 @@ function MascotasPage(){
     const location = useLocation();
     const navigate = useNavigate();
     const { handleError } = useErrorHandler();
+    const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
 
     const handleAbrirCrear = () => {
@@ -76,19 +80,21 @@ function MascotasPage(){
         }
     };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if (!itemAEliminar) return
+        setIsDeleting(true)
         try {
-            if (id) {
-                const resp = await delMascotasApi(id);
-            }
-                
+            
+                await delMascotasApi(itemAEliminar);
                 showAlert("¡Éxito!", "La mascota se eliminó correctamente.", "success"); 
                 const mascotasActualizadas = await getMascotasApi();
                 setDatos(Array.isArray(mascotasActualizadas) ? mascotasActualizadas : []);
 
             } catch (error) {
                 handleError(error, "No se pudo eliminar la mascota.");
-
+            } finally {
+                setIsDeleting(false)
+                setItemAEliminar(null)
             }
         };
     
@@ -125,16 +131,22 @@ function MascotasPage(){
         }
     }, [location, navigate]);
   
-    
+    //Mejorado con Primise all para que las llamadas a las apis no recargaran
+    // el useeffect
     useEffect(() => {
         const getMascotasInfo = async () => {
+            setIsLoading(true)
             try{
-                await getDuenos()
-                const resp = await getMascotasApi()
-                setDatos(resp)
+                const [duenos, mascotas] = await Promise.all([
+                    getDuenosApi(),
+                    getMascotasApi()
+                ]);
+                setDuenos(duenos)
+                setDatos(mascotas)
             } catch(error){
-                handleError(error, "No se pudieron cargar las mascotas.");
-               
+                handleError(error, "No se pudieron cargar los datos de la página.");
+            } finally{
+                setIsLoading(false)
             }
     };
     getMascotasInfo();
@@ -177,8 +189,8 @@ function MascotasPage(){
                 {isUser && (
                     <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
-                        <span className="font-montserrat text-xl lg:text-2xl"> Dueñps</span>
-                        <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Dueños: {datos.length} </span>
+                        <span className="font-montserrat text-xl lg:text-2xl"> Mascotas</span>
+                        <span className="font-montserrat font-semibold text-gray-500 text-sm lg:text-md">Total Mascotas: {datos.length} </span>
                     </div>
                     </div>
                 )}
@@ -189,7 +201,7 @@ function MascotasPage(){
                     className="mt-5"
                     value={busqueda}
                     onChange={(e) => setBusqueda(e?.target?.value ?? e)}
-                    aria-label="Buscador de dueños"
+                    aria-label="Buscador de Mascotas"
                     >
                     <SearchField.Group className="border border-gray-100">
                         <SearchField.SearchIcon />
@@ -199,7 +211,7 @@ function MascotasPage(){
                 </SearchField>
             </div>
              
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:justify-evenly max-w-screen mt-4 mb-4">
+            <div className="grid grid-cols-1 justify-center items-center sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-2 lg:justify-evenly max-w-screen mt-4 mb-4">
             {mascotasFiltradas.length>0 ? <>    
                 {mascotasFiltradas.map((mascota, key) =>( 
                     
@@ -233,7 +245,7 @@ function MascotasPage(){
                                     <Button aria-label="Editar Mascota" isIconOnly size="lg"  className="bg-white text-accent-aqua-vg hover:bg-success-soft" onPress={() => handleAbrirEditar(mascota)}>
                                         <SquarePen className="size-4"/>
                                     </Button>
-                                    <Button aria-label="Eliminar Mascota" isIconOnly size="lg" className="bg-white text-accent-aqua-vg hover:bg-danger-soft hover:text-danger" onPress={() => handleDelete(mascota.id)}>
+                                    <Button aria-label="Eliminar Mascota" isIconOnly size="lg" className="bg-white text-accent-aqua-vg hover:bg-danger-soft hover:text-danger" onPress={() => setItemAEliminar(mascota.id)}>
                                         <Trash2 className="size-4"/>
                                     </Button>
                                 </div>
@@ -249,8 +261,15 @@ function MascotasPage(){
                         </Card.Content>
                     </Card>
                 ))} </> : 
-                <div className="flex ">
-                <span className="text-sm text-gray-500"> No se encontraron resultados.</span>
+                <div className="flex justify-center w-screen">
+                    {isLoading ? (
+                        <div className="flex flex-row items-center gap-1">
+                        <Spinner className="text-muted" size="sm"/>
+                        <span className="text-sm text-muted">Cargando..</span>
+                    </div>
+                    ) : (
+                    <span className="text-sm text-muted">No se encontraron resultados</span>
+                    )}
                 </div>
                 }
             </div>
@@ -271,6 +290,13 @@ function MascotasPage(){
                 onClose={() => setIsModalHMOpen(false)} 
                 mascotaActual={mascotaSeleccionada}
             />)}
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
+            />
             </>
         );
 }

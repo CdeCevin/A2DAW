@@ -16,7 +16,6 @@ export default function TratamientosModal({ isOpen, onClose, tratActual, onSave,
             if (isOpen) {
                 setLoading(false)
         if (tratActual) {
-            console.log("tratamiento: ", tratActual)
             // Si viene un tratamiento se llena el formulario
             setFormData({
                 cita: { id: tratActual.cita?.id ? String(tratActual.cita.id) : "" },
@@ -49,6 +48,16 @@ export default function TratamientosModal({ isOpen, onClose, tratActual, onSave,
             setLoading(false);
         }
     };
+    const opcionesCitas = [...citas];
+
+    if (tratActual?.cita && !citas.some(c => c.id === tratActual.cita.id)) {
+        opcionesCitas.push({
+            id: tratActual.cita.id,
+            fecha: tratActual.cita.fecha || new Date().toISOString(), 
+            motivo: (tratActual.cita.motivo || "-") + " (Eliminada)",
+            mascota: { nombre: tratActual.cita.mascota?.nombre }
+        });
+    }
 return (
 <Modal isOpen={isOpen} onOpenChange={onClose} placement="center">
     
@@ -71,8 +80,8 @@ return (
                             </Select.Trigger>
                             <Select.Popover >
                                 <ListBox >
-                                {citas.map((cita, key) =>(
-                                     <ListBox.Item key={cita.id} id={`${cita.id}`} textValue={`${cita.motivo}`}>
+                                {opcionesCitas.map((cita, key) =>(
+                                     <ListBox.Item key={cita.id} id={String(cita.id)} textValue={`${cita.motivo}`}>
                                     {cita.mascota.nombre} - ({new Date(cita.fecha).toLocaleString("es-CL", {
                                         day: "2-digit",
                                         month: "2-digit",
