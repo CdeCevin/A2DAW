@@ -34,9 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/auth/veterinarios").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/auth/recepcionistas").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.GET, "/auth/usuarios/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/auth/usuarios/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/auth/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/usuarios", "/auth/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/auth/create").hasRole("ADMIN")
                         .requestMatchers("/tratamiento", "/tratamiento/**").hasRole("ADMIN")
                         .requestMatchers("/cita", "/cita/**").hasAnyRole("ADMIN", "USER")
@@ -46,6 +44,18 @@ public class SecurityConfig {
                         .requestMatchers("/dashboard", "/dashboard/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()
                         .authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\": 401, \"message\": \"No autorizado (Token faltante o inválido)\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\": 403, \"message\": \"Acceso denegado: No tiene los permisos suficientes\"}");
+                        })
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
