@@ -74,6 +74,17 @@ public class CitaController {
             return ResponseEntity.badRequest().body("El usuario especificado no es un veterinario (no tiene rol de administrador)");
         }
 
+        if (cita.getFecha() == null) {
+            return ResponseEntity.badRequest().body("Debe especificar la fecha y hora de la cita");
+        }
+
+        if (repository.existsByVeterinarioIdAndFecha(veterinario.getId(), cita.getFecha())) {
+            return ResponseEntity.badRequest().body("El veterinario ya tiene una cita programada a esa hora");
+        }
+        if (repository.existsByMascotaIdAndFecha(mascota.getId(), cita.getFecha())) {
+            return ResponseEntity.badRequest().body("La mascota ya tiene una cita programada a esa hora");
+        }
+
         cita.setMascota(mascota);
         cita.setVeterinario(veterinario);
         repository.save(cita);
@@ -85,24 +96,18 @@ public class CitaController {
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Cita details) {
         return repository.findById(id)
                 .map(existing -> {
-                    if (details.getFecha() != null) {
-                        existing.setFecha(details.getFecha());
-                    }
-                    if (details.getMotivo() != null) {
-                        existing.setMotivo(details.getMotivo());
-                    }
-                    if (details.getDiagnostico() != null) {
-                        existing.setDiagnostico(details.getDiagnostico());
-                    }
+                    java.time.LocalDateTime targetFecha = (details.getFecha() != null) ? details.getFecha() : existing.getFecha();
 
+                    Mascota targetMascota = existing.getMascota();
                     if (details.getMascota() != null && details.getMascota().getId() != null) {
                         Mascota mascota = mascotaRepository.findById(details.getMascota().getId()).orElse(null);
                         if (mascota == null) {
                             return ResponseEntity.badRequest().body("La mascota especificada no existe");
                         }
-                        existing.setMascota(mascota);
+                        targetMascota = mascota;
                     }
 
+                    Usuario targetVeterinario = existing.getVeterinario();
                     if (details.getVeterinario() != null && details.getVeterinario().getId() != null) {
                         Usuario veterinario = usuarioRepository.findById(details.getVeterinario().getId()).orElse(null);
                         if (veterinario == null) {
@@ -113,8 +118,31 @@ public class CitaController {
                         if (!isAdmin) {
                             return ResponseEntity.badRequest().body("El usuario especificado no es un veterinario");
                         }
-                        existing.setVeterinario(veterinario);
+                        targetVeterinario = veterinario;
                     }
+
+                    if (targetFecha == null) {
+                        return ResponseEntity.badRequest().body("La fecha no puede ser nula");
+                    }
+
+                    if (repository.existsByVeterinarioIdAndFechaAndIdNot(targetVeterinario.getId(), targetFecha, id)) {
+                        return ResponseEntity.badRequest().body("El veterinario ya tiene una cita programada a esa hora");
+                    }
+                    if (repository.existsByMascotaIdAndFechaAndIdNot(targetMascota.getId(), targetFecha, id)) {
+                        return ResponseEntity.badRequest().body("La mascota ya tiene una cita programada a esa hora");
+                    }
+
+                    existing.setFecha(targetFecha);
+                    existing.setMascota(targetMascota);
+                    existing.setVeterinario(targetVeterinario);
+
+                    if (details.getMotivo() != null) {
+                        existing.setMotivo(details.getMotivo());
+                    }
+                    if (details.getDiagnostico() != null) {
+                        existing.setDiagnostico(details.getDiagnostico());
+                    }
+
                     repository.save(existing);
                     return ResponseEntity.ok("Cita actualizada con éxito");
                 })

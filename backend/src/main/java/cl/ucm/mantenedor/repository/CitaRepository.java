@@ -13,4 +13,8 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
     List<Cita> findByOrderByFechaDesc(Pageable pageable);
     List<Cita> findByFechaAfterOrderByFechaAsc(LocalDateTime fecha, Pageable pageable);
     List<Cita> findByFechaGreaterThanEqualOrderByFechaAsc(LocalDateTime fecha);
+    boolean existsByVeterinarioIdAndFecha(Integer veterinarioId, LocalDateTime fecha);
+    boolean existsByMascotaIdAndFecha(Integer mascotaId, LocalDateTime fecha);
+    boolean existsByVeterinarioIdAndFechaAndIdNot(Integer veterinarioId, LocalDateTime fecha, Integer id);
+    boolean existsByMascotaIdAndFechaAndIdNot(Integer mascotaId, LocalDateTime fecha, Integer id);
 }
