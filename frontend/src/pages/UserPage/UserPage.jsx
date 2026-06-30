@@ -43,6 +43,15 @@ function UserPage(){
             if (userSeleccionado?.id) {
                 // MODO EDITAR
                 const resp = await editUsersApi(userSeleccionado.id, payloadLimpio);
+                if(userSeleccionado.correo === correoUserLogin){
+                    showAlert("Actualización", "Has modificado tus permisos. Por seguridad, debes iniciar sesión nuevamente.", "warning")
+                    setIsModalOpen(false)
+                    localStorage.removeItem('token')
+                    setTimeout(() => {
+                        navigate('/', {replace: true})
+                    }, 2000)
+                    return
+                }
             } else {
                 // MODO CREAR
                 const resp = await crearUsersApi(payloadLimpio);
