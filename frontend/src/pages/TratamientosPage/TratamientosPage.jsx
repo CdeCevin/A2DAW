@@ -10,6 +10,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import TratamientosModal from "./TratamientosModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 
 function TratamientosPage(){
@@ -22,6 +23,8 @@ function TratamientosPage(){
     const [datos, setDatos] = useState([]);
     const { handleError } = useErrorHandler();
     const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
 
     const handleAbrirCrear = () => {
@@ -60,18 +63,20 @@ function TratamientosPage(){
             }
         };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if(!itemAEliminar) return
+        setIsDeleting(true)
         try {
-            if (id) {
-                const resp = await delTratamientoApi(id);
-            }
+                await delTratamientoApi(itemAEliminar);
                 showAlert("¡Éxito!", "El tratamiento se eliminó correctamente.", "success"); 
                 const tratActualizados = await getTratamientoApi();
                 setDatos(Array.isArray(tratActualizados) ? tratActualizados : []);
 
             } catch (error) {
-                console.error("Error en handleDelete:", error);
                 showAlert("Error", "No se pudo eliminar el tratamiento.", "danger");
+            } finally {
+                setIsDeleting(false)
+                setItemAEliminar(null)
             }
         };
     
@@ -219,7 +224,7 @@ function TratamientosPage(){
                                             <Button isIconOnly aria-label="Editar Tratamiento" size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button isIconOnly aria-label="Eliminar Tratamiento" size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button isIconOnly aria-label="Eliminar Tratamiento" size="sm" variant="danger-soft" onPress={() => setItemAEliminar(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
@@ -285,6 +290,13 @@ function TratamientosPage(){
                 tratActual={tratSeleccionado}
                 onSave={handleGuardarTrat}
                 citas={citas}
+            />
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
             />
             </>
         );

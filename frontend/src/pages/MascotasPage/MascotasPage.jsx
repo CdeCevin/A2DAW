@@ -10,6 +10,7 @@ import  MascotasHistorialModal from "./MascotasHistorialModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 
 function MascotasPage(){
@@ -24,6 +25,8 @@ function MascotasPage(){
     const navigate = useNavigate();
     const { handleError } = useErrorHandler();
     const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
 
     const handleAbrirCrear = () => {
@@ -77,19 +80,21 @@ function MascotasPage(){
         }
     };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if (!itemAEliminar) return
+        setIsDeleting(true)
         try {
-            if (id) {
-                const resp = await delMascotasApi(id);
-            }
-                
+            
+                await delMascotasApi(itemAEliminar);
                 showAlert("¡Éxito!", "La mascota se eliminó correctamente.", "success"); 
                 const mascotasActualizadas = await getMascotasApi();
                 setDatos(Array.isArray(mascotasActualizadas) ? mascotasActualizadas : []);
 
             } catch (error) {
                 handleError(error, "No se pudo eliminar la mascota.");
-
+            } finally {
+                setIsDeleting(false)
+                setItemAEliminar(null)
             }
         };
     
@@ -240,7 +245,7 @@ function MascotasPage(){
                                     <Button aria-label="Editar Mascota" isIconOnly size="lg"  className="bg-white text-accent-aqua-vg hover:bg-success-soft" onPress={() => handleAbrirEditar(mascota)}>
                                         <SquarePen className="size-4"/>
                                     </Button>
-                                    <Button aria-label="Eliminar Mascota" isIconOnly size="lg" className="bg-white text-accent-aqua-vg hover:bg-danger-soft hover:text-danger" onPress={() => handleDelete(mascota.id)}>
+                                    <Button aria-label="Eliminar Mascota" isIconOnly size="lg" className="bg-white text-accent-aqua-vg hover:bg-danger-soft hover:text-danger" onPress={() => setItemAEliminar(mascota.id)}>
                                         <Trash2 className="size-4"/>
                                     </Button>
                                 </div>
@@ -285,6 +290,13 @@ function MascotasPage(){
                 onClose={() => setIsModalHMOpen(false)} 
                 mascotaActual={mascotaSeleccionada}
             />)}
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
+            />
             </>
         );
 }

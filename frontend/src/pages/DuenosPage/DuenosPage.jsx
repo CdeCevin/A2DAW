@@ -8,6 +8,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import  DuenosPageModal from "./DuenosPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 function DuenosPage(){
     const navigate = useNavigate();
@@ -19,6 +20,8 @@ function DuenosPage(){
     const [tabActivo, setTabActivo] = useState("all");
     const { handleError } = useErrorHandler();
     const [isLoading, setIsLoading] = useState(true); 
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleAbrirCrear = () => {
         setDuenoSeleccionado(null); // Null para crear
@@ -56,20 +59,22 @@ function DuenosPage(){
             }
         };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if(!itemAEliminar) return;
+        setIsDeleting(true)
         try {
-            if (id) {
-                const resp = await delDuenosApi(id);
-            }
-                
+                await delDuenosApi(itemAEliminar);    
                 showAlert("¡Éxito!", "El dueño se eliminó correctamente.", "success"); 
                 const duenosActualizados = await getDuenosApi();
                 setDatos(Array.isArray(duenosActualizados) ? duenosActualizados : []);
 
             } catch (error) {
                 handleError(error, "No se pudo eliminar el dueño.");
-
+            } finally {
+                setIsDeleting(false)
+                setItemAEliminar(null)
             }
+
         };
     
     // Información del usuario
@@ -229,7 +234,7 @@ function DuenosPage(){
                                             <Button aria-label="Editar Dueño" isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button aria-label="Eliminar Dueño" isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button aria-label="Eliminar Dueño" isIconOnly size="sm" variant="danger-soft" onPress={() => setItemAEliminar(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                         </div>    
@@ -315,6 +320,13 @@ function DuenosPage(){
                 duenoActual={duenoSeleccionado}
                 onSave={handleGuardarDueno}
                
+            />
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
             />
             </>
         );

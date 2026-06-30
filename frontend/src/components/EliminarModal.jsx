@@ -24,7 +24,7 @@ export default function EliminarModal({ isOpen, onClose, onConfirm, isPending })
             </AlertDialog.Body>
             <AlertDialog.Footer>
               <Button 
-                        variant="secondary" 
+                        variant="tertiary" 
                         onPress={onClose}
                         disabled={isPending}
                     >
@@ -32,7 +32,7 @@ export default function EliminarModal({ isOpen, onClose, onConfirm, isPending })
                     </Button>
                     
                     <Button 
-                        className="bg-yellow-600 text-white hover:bg-yellow-700" 
+                        className="bg-warning text-white hover:bg-warning-hover" 
                         onPress={onConfirm}
                         isPending={isPending}
                     >

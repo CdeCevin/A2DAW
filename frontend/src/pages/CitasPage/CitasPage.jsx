@@ -10,7 +10,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import CitasModal from "./CitasModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
-import EliminarModal from "../../components/eliminarModal";
+import EliminarModal from "../../components/EliminarModal";
 
 
 function CitasPage(){
@@ -65,21 +65,21 @@ function CitasPage(){
     };
 
     const confirmarEliminacion = async () => {
-        if (!itemAEliminar) return; 
-        setIsDeleting(true); 
+        if (!itemAEliminar) return
+        setIsDeleting(true)
 
         try {
             await delCitasApi(itemAEliminar);
             
-            showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success"); 
-            const citasActualizadas = await getCitasApi();
-            setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : []);
+            showAlert("¡Éxito!", "La cita se eliminó correctamente.", "success")
+            const citasActualizadas = await getCitasApi()
+            setDatos(Array.isArray(citasActualizadas) ? citasActualizadas : [])
 
         } catch (error) {
-            handleError(error, "No se pudo eliminar la cita.");
+            handleError(error, "No se pudo eliminar la cita.")
         } finally {
-            setIsDeleting(false);
-            setItemAEliminar(null); 
+            setIsDeleting(false)
+            setItemAEliminar(null)
         }
     };
     

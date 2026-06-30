@@ -8,6 +8,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import  UserPageModal from "./UserPageModal";
 import { useGlobalAlert } from "../../store/alert-context";
 import { useErrorHandler } from "../../api/errorHandler";
+import EliminarModal from "../../components/EliminarModal";
 
 function UserPage(){
     const navigate = useNavigate();
@@ -19,7 +20,8 @@ function UserPage(){
     const [tabActivo, setTabActivo] = useState("all");
     const { handleError } = useErrorHandler();
     const [isLoading, setIsLoading] = useState(true); 
-
+    const [itemAEliminar, setItemAEliminar] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleAbrirCrear = () => {
         setUserSeleccionado(null); // Null para crear
@@ -57,18 +59,21 @@ function UserPage(){
             }
         };
 
-    const handleDelete = async (id) => {
+    const confirmarEliminacion = async () => {
+        if(!itemAEliminar) return
+        setIsDeleting(true)
         try {
-            if (id) {
-                const resp = await delUsersApi(id);
-            }
-                
+            
+                await delUsersApi(itemAEliminar);
                 showAlert("¡Éxito!", "El usuario se eliminó correctamente.", "success"); 
                 const usersActualizados = await getUsersApi();
                 setDatos(Array.isArray(usersActualizados) ? usersActualizados : []);
 
             } catch (error) {
                 handleError(error, "No se pudo eliminar el usuario.");
+            } finally {
+                setIsDeleting(false)
+                setItemAEliminar(null)
             }
         };
     
@@ -288,7 +293,7 @@ function UserPage(){
                                             <Button aria-label="Editar usuario" isDisabled={data.especialidad && data.correo != correoUserLogin  } isIconOnly size="sm" variant="tertiary" onPress={() => handleAbrirEditar(data)}>
                                             <SquarePen className="size-4"/>
                                             </Button>
-                                            <Button aria-label="Eliminar usuario" isDisabled={data.correo == correoUserLogin } isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(data.id)}>
+                                            <Button aria-label="Eliminar usuario" isDisabled={data.correo == correoUserLogin } isIconOnly size="sm" variant="danger-soft" onPress={() => setItemAEliminar(data.id)}>
                                             <Trash2 className="size-4"/>
                                             </Button>
                                             
@@ -310,6 +315,13 @@ function UserPage(){
                 userActual={userSeleccionado}
                 onSave={handleGuardarUser}
                
+            />
+            <EliminarModal 
+                isOpen={itemAEliminar !== null} 
+                onClose={() => setItemAEliminar(null)} 
+                onConfirm={confirmarEliminacion} 
+                isPending={isDeleting}
+                
             />
             </>
         );
