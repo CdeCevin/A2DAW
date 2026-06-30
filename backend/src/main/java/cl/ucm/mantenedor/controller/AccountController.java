@@ -22,9 +22,13 @@ public class AccountController {
     @PostMapping(path = "create")
     public ResponseEntity<?> createAccount(@RequestBody AccountDtoIn in){
         try{
-            return ResponseEntity.ok(service.createAccount(in));
+            return ResponseEntity.status(HttpStatus.CREATED).body(service.createAccount(in));
         }catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorInfo(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorInfo(400, e.getMessage()));
+        }catch (org.springframework.dao.DataIntegrityViolationException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorInfo(409, "El correo electrónico ya está registrado."));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorInfo(500, "Error interno del servidor: " + e.getMessage()));
         }
     }
 
@@ -74,7 +78,11 @@ public class AccountController {
             service.updateUsuario(id, details);
             return ResponseEntity.ok("Usuario actualizado con éxito");
         }catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorInfo(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorInfo(400, e.getMessage()));
+        }catch (org.springframework.dao.DataIntegrityViolationException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorInfo(409, "El correo electrónico ya está en uso."));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorInfo(500, "Error interno del servidor: " + e.getMessage()));
         }
     }
 
@@ -82,7 +90,7 @@ public class AccountController {
     public ResponseEntity<?> deleteUsuario(@PathVariable Integer id){
         if (service.existsUsuarioById(id)) {
             service.deleteUsuario(id);
-            return ResponseEntity.ok("Usuario eliminado con éxito");
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

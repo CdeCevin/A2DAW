@@ -65,7 +65,7 @@ public class DuenioController {
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return ResponseEntity.ok("Dueño eliminado con éxito");
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
