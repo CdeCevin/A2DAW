@@ -45,7 +45,17 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AccountDtoOut createAccount(AccountDtoIn in) {
-        if(repository.findByCorreo(in.getCorreo()).isPresent()){
+        if (in.getCorreo() == null || in.getCorreo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El correo electrónico es requerido");
+        }
+        if (in.getPassword() == null || in.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña es requerida");
+        }
+        if (in.getName() == null || in.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre es requerido");
+        }
+
+        if(repository.existsByCorreoIncludeInactive(in.getCorreo())){
             throw new IllegalArgumentException("correo ya registrado");
         }
 
@@ -107,7 +117,7 @@ public class AccountServiceImpl implements AccountService{
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if (details.getCorreo() != null && !details.getCorreo().equalsIgnoreCase(existing.getCorreo())) {
-            if (repository.findByCorreo(details.getCorreo()).isPresent()) {
+            if (repository.existsByCorreoIncludeInactive(details.getCorreo())) {
                 throw new IllegalArgumentException("El correo ya está registrado por otro usuario");
             }
             existing.setCorreo(details.getCorreo());
