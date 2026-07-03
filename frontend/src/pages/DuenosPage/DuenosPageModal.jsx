@@ -86,7 +86,13 @@ return (
                         value={formData.email} 
                         onChange={(value) => setFormData({ ...formData, email: value })}
                         name="correo" 
-                        type="email" 
+                        type="email"
+                        validate={(value) => {
+                            if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+                                return "Por favor ingrese un correo válido";
+                            }
+                            return null;
+                        }}
                         >
                         <Label>Correo Electrónico</Label>
                         <Input className="border border-gray-100"  placeholder="correo@ejemplo.com" variant="primary" />
