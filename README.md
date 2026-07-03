@@ -9,8 +9,7 @@ a través de un panel unificado con historiales médicos completos por mascota, 
 
 ## Consideraciones
 ### Usuarios de Prueba
-- Administrador: admin@clinica.com 123456789
-- Usuario: user@clinica.com 123456789
+Los usuarios de prueba en caso de ejecución del proyecto se encuentran dentro del txt entregado en LMS.
 
 ### Frontend
 - Como framerwork CSS se utilizó ‌tailwindcss/vite
