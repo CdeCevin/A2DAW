@@ -91,7 +91,7 @@ return (
                                 <Card key={key} className={`p-0 w-full bg-white border ${evento.esUltima ? "border-accent-aqua-vg/50" : "border-gray-200"}`}>
                                     <Card.Header className={`w-full p-4 rounded-t-3xl ${evento.esUltima ? "bg-accent-aqua-vg/20" : "bg-gray-200"}`}>
                                         <div className='flex flex-col lg:flex-row items-center justify-between'>
-                                            <div className='flex flex-col items-start justify-start gap-1'>
+                                            <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start gap-1'>
                                                 <span className='font-semibold'>{new Date(evento.fecha).toLocaleDateString('es-CL', {
                                                     weekday: 'long',
                                                     year: 'numeric',
@@ -102,7 +102,7 @@ return (
                                                 <Chip 
                                                     
                                                     variant="soft"  
-                                                    className="flex bg-accent-aqua-vg/70 text-white justify-center w-16 " 
+                                                    className="flex bg-accent-aqua-vg/70 text-white justify-center w-16 mb-1 lg:mb-0" 
                                                 >
                                                     <Chip.Label>Última</Chip.Label>
                                                 </Chip>)}
